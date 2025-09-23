@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz de Conhecimentos Gerais</title>
+
+    <!-- TailwindCSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<!-- Favicon (Ícone da Aba) -->
+    <link rel="icon" type="image/png" href="logoQuiz.png">
+
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Tone.js for Sound Effects -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent; /* Remove o destaque de toque em mobile */
+        }
+        /* Estilos para o slider de rodadas */
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            background: #4f46e5;
+            cursor: pointer;
+            border-radius: 50%;
+            border: 4px solid #1f2937;
+        }
+        input[type=range]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            background: #4f46e5;
+            cursor: pointer;
+            border-radius: 50%;
+            border: 4px solid #1f2937;
+        }
+        /* Animação de confete */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            animation: fall 5s linear forwards;
+            border-radius: 50%;
+        }
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white antialiased flex items-center justify-center min-h-screen p-4 overflow-hidden">
+
+    <div id="app-container" class="w-full max-w-md mx-auto">
+
+        <!-- =================================== -->
+        <!-- ======== TELA DE CONFIGURAÇÃO ======== -->
+        <!-- =================================== -->
+        <div id="setup-screen" class="space-y-6">
+            <div class="text-center">
+                <h1 class="text-4xl font-extrabold tracking-tight text-indigo-400">Quiz de</h1>
+                <h2 class="text-5xl font-extrabold tracking-tight">Conhecimentos Gerais</h2>
+                <p class="mt-2 text-gray-400">Desafie seus amigos!</p>
+            </div>
+
+            <!-- Card de Configuração -->
+            <div class="bg-gray-800 p-6 rounded-2xl shadow-lg space-y-6">
+                <!-- Número de Jogadores -->
+                <div>
+                    <label class="font-bold text-lg text-gray-300 flex items-center gap-2">
+                        <i data-lucide="users" class="w-5 h-5 text-indigo-400"></i>
+                        Jogadores
+                    </label>
+                    <div id="player-count-selector" class="grid grid-cols-5 gap-2 mt-2">
+                        <!-- Botões serão gerados pelo JS -->
+                    </div>
+                </div>
+
+                <!-- Número de Rodadas -->
+                <div>
+                    <label for="rounds-slider" class="font-bold text-lg text-gray-300 flex items-center gap-2">
+                         <i data-lucide="repeat" class="w-5 h-5 text-indigo-400"></i>
+                         Rodadas: <span id="rounds-value" class="font-black text-white">10</span>
+                    </label>
+                    <input id="rounds-slider" type="range" min="3" max="20" value="10" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer mt-3">
+                </div>
+
+                <!-- Exibição do Placar -->
+                <div>
+                    <label class="font-bold text-lg text-gray-300 flex items-center gap-2">
+                        <i data-lucide="bar-chart-2" class="w-5 h-5 text-indigo-400"></i>
+                        Placar
+                    </label>
+                    <div id="score-display-mode" class="grid grid-cols-2 gap-2 mt-2">
+                        <button data-mode="realtime" class="score-mode-btn bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-transform transform active:scale-95">Em tempo real</button>
+                        <button data-mode="final" class="score-mode-btn bg-gray-700 text-gray-300 font-semibold py-2 px-4 rounded-lg shadow-md transition-transform transform active:scale-95">Apenas no final</button>
+                    </div>
+                </div>
+            </div>
+
+            <button id="start-game-btn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-4 rounded-xl text-xl shadow-lg transition-transform transform active:scale-95 flex items-center justify-center gap-2">
+                Começar Jogo
+                <i data-lucide="arrow-right" class="w-6 h-6"></i>
+            </button>
+        </div>
+
+        <!-- =================================== -->
+        <!-- ========   TELA DO JOGO   ======== -->
+        <!-- =================================== -->
+        <div id="game-screen" class="hidden">
+            <!-- Header do Jogo -->
+            <div id="game-header" class="flex justify-between items-center mb-4">
+                <div class="font-bold text-lg">Rodada <span id="current-round">1</span>/<span id="total-rounds">10</span></div>
+                <div id="current-player-indicator" class="text-lg font-bold p-2 rounded-lg text-center transition-all duration-300">
+                    Vez de: <span id="current-player-name"></span>
+                </div>
+            </div>
+
+            <!-- Card da Pergunta -->
+            <div class="bg-gray-800 p-6 rounded-2xl shadow-lg mb-4 min-h-[120px] flex items-center justify-center">
+                <h2 id="question-text" class="text-xl md:text-2xl font-bold text-center"></h2>
+            </div>
+            
+            <!-- Opções de Resposta -->
+            <div id="options-container" class="grid grid-cols-1 gap-4">
+                <!-- Botões de opção serão gerados pelo JS -->
+            </div>
+
+            <!-- Placar em tempo real -->
+            <div id="realtime-scoreboard" class="mt-6 hidden">
+                 <h3 class="font-bold text-lg text-gray-300 mb-2 text-center">Placar Parcial</h3>
+                 <div id="realtime-scores" class="flex justify-center gap-4 text-center">
+                    <!-- Pontuações serão geradas pelo JS -->
+                 </div>
+            </div>
+
+            <!-- Feedback de Resposta -->
+            <div id="feedback-overlay" class="hidden fixed inset-0 bg-black bg-opacity-75 flex flex-col items-center justify-center z-50 text-center p-4">
+                <div id="feedback-icon" class="mb-4"></div>
+                <h2 id="feedback-text" class="text-4xl font-black"></h2>
+                <p id="feedback-details" class="text-lg text-gray-300 mt-2"></p>
+            </div>
+
+        </div>
+
+        <!-- =================================== -->
+        <!-- ======== TELA DE RESULTADO ======== -->
+        <!-- =================================== -->
+        <div id="result-screen" class="hidden text-center">
+            <h1 class="text-5xl font-extrabold tracking-tight mb-2">Fim de Jogo!</h1>
+            <div id="winner-announcement" class="mb-6">
+                <!-- Anúncio do vencedor será gerado pelo JS -->
+            </div>
+
+            <div class="bg-gray-800 p-6 rounded-2xl shadow-lg space-y-4">
+                <h2 class="text-2xl font-bold text-indigo-400">Placar Final</h2>
+                <div id="final-scoreboard" class="space-y-3">
+                    <!-- Placar final será gerado pelo JS -->
+                </div>
+            </div>
+            
+            <div class="mt-6 grid grid-cols-2 gap-4">
+                <button id="restart-game-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-xl text-lg shadow-lg transition-transform transform active:scale-95 flex items-center justify-center gap-2">
+                    <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+                    Reiniciar
+                </button>
+                <button id="share-result-btn" class="w-full bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-4 rounded-xl text-lg shadow-lg transition-transform transform active:scale-95 flex items-center justify-center gap-2">
+                    <i data-lucide="share-2" class="w-5 h-5"></i>
+                    Compartilhar
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ===================================
+        // =========== BANCO DE DADOS ==========
+        // ===================================
+        const questions = [
+  { question: "Em que ano o homem pisou na Lua pela primeira vez?", options: ["1971", "1965", "1969", "1972"], answer: "1969" },
+  { question: "Quem foi o primeiro presidente do Brasil?", options: ["Prudente de Morais", "Dom Pedro I", "Getúlio Vargas", "Deodoro da Fonseca"], answer: "Deodoro da Fonseca" },
+  { question: "Qual civilização antiga construiu as pirâmides de Gizé?", options: ["Romanos", "Gregos", "Maias", "Egípcios"], answer: "Egípcios" },
+  { question: "A Primeira Guerra Mundial começou em que ano?", options: ["1939", "1918", "1922", "1914"], answer: "1914" },
+  { question: "Quem descobriu o Brasil?", options: ["Vasco da Gama", "Pedro Álvares Cabral", "Fernão de Magalhães", "Cristóvão Colombo"], answer: "Pedro Álvares Cabral" },
+// História
+  { question: "Quem foi o líder da Revolução Russa de 1917?", options: ["Lenin", "Marx", "Trotsky", "Stalin"], answer: "Lenin" },
+  { question: "Em que ano Cristóvão Colombo chegou à América?", options: ["1485", "1492", "1500", "1498"], answer: "1492" },
+  { question: "Qual era o nome do navio de Pedro Álvares Cabral que descobriu o Brasil?", options: ["Pedro", "Santa Maria", "São Gabriel", "Santo Antônio"], answer: "Santo Antônio" },
+  { question: "Quem foi o imperador francês derrotado em Waterloo?", options: ["Carlos Magno", "Napoleão III", "Napoleão Bonaparte", "Louis XVI"], answer: "Napoleão Bonaparte" },
+  { question: "Qual guerra aconteceu entre 1939 e 1945?", options: ["Segunda Guerra Mundial", "Primeira Guerra Mundial", "Guerra Fria", "Guerra do Vietnã"], answer: "Segunda Guerra Mundial" },
+  { question: "Em que ano caiu o Muro de Berlim?", options: ["1987", "1990", "1991", "1989"], answer: "1989" },
+  { question: "Quem foi o responsável pela independência dos EUA?", options: ["George Washington", "Thomas Jefferson", "Benjamin Franklin", "Abraham Lincoln"], answer: "George Washington" },
+  { question: "Qual civilização construiu Machu Picchu?", options: ["Astecas", "Egípcios", "Incas", "Maias"], answer: "Incas" },
+  { question: "Quem era o presidente dos EUA durante a Guerra Civil?", options: ["Abraham Lincoln", "George Washington", "Jefferson Davis", "Theodore Roosevelt"], answer: "Abraham Lincoln" },
+  { question: "Em que ano começou a Primeira Guerra Mundial?", options: ["1922", "1918", "1914", "1939"], answer: "1914" },
+  { question: "Quem foi o faraó do Egito responsável pela construção da Grande Pirâmide?", options: ["Quéops", "Tutancâmon", "Ramsés II", "Akhenaton"], answer: "Quéops" },
+  { question: "Qual país foi o primeiro a dar direito de voto às mulheres?", options: ["França", "Estados Unidos", "Reino Unido", "Nova Zelândia"], answer: "Nova Zelândia" },
+  { question: "Em que ano aconteceu a Revolução Industrial?", options: ["Século XVII", "Século XVIII", "Século XIX", "Século XVI"], answer: "Século XVIII" },
+  { question: "Quem assinou a Lei Áurea no Brasil?", options: ["Dom Pedro II", "Deodoro da Fonseca", "Getúlio Vargas", "Princesa Isabel"], answer: "Princesa Isabel" },
+  { question: "Qual país lançou a primeira bomba atômica na Segunda Guerra Mundial?", options: ["Reino Unido", "Estados Unidos", "Alemanha", "Japão"], answer: "Estados Unidos" },
+  { question: "Quem foi o primeiro imperador do Brasil?", options: ["Napoleão Bonaparte", "Dom Pedro II", "Dom Pedro I", "João VI"], answer: "Dom Pedro I" },
+  { question: "Qual tratado dividiu o Novo Mundo entre Espanha e Portugal?", options: ["Paz de Westfália", "Tratado de Tordesilhas", "Tratado de Versalhes", "Tratado de Paris"], answer: "Tratado de Tordesilhas" },
+  { question: "Em que ano Napoleão Bonaparte se tornou imperador?", options: ["1812", "1799", "1804", "1800"], answer: "1804" },
+  { question: "Qual foi o primeiro país a abolir a escravidão?", options: ["Reino Unido", "França", "Estados Unidos", "Haiti"], answer: "Haiti" },
+  { question: "Quem foi o líder da independência da Índia?", options: ["Subhas Chandra Bose", "Jawaharlal Nehru", "Mahatma Gandhi", "Indira Gandhi"], answer: "Mahatma Gandhi" },
+  { question: "Qual foi o principal país aliado da Alemanha na Segunda Guerra Mundial?", options: ["França", "Japão", "Itália", "União Soviética"], answer: "Itália" },
+  { question: "Quem descobriu a penicilina?", options: ["Louis Pasteur", "Robert Koch", "Alexander Fleming", "Marie Curie"], answer: "Alexander Fleming" },
+  { question: "Em que ano ocorreu a Revolução Francesa?", options: ["1792", "1776", "1789", "1804"], answer: "1789" },
+  { question: "Qual civilização construiu os zigurates?", options: ["Sumérios", "Egípcios", "Maias", "Astecas"], answer: "Sumérios" },
+  { question: "Quem foi o líder da União Soviética durante a Segunda Guerra Mundial?", options: ["Brejnev", "Lenin", "Trotsky", "Joseph Stalin"], answer: "Joseph Stalin" },
+  { question: "Em que ano terminou a Guerra do Vietnã?", options: ["1972", "1975", "1969", "1973"], answer: "1975" },
+  { question: "Qual civilização construiu o Coliseu?", options: ["Romanos", "Egípcios", "Gregos", "Cartagineses"], answer: "Romanos" },
+  { question: "Quem foi o primeiro-ministro britânico durante a Segunda Guerra Mundial?", options: ["Margaret Thatcher", "Winston Churchill", "Tony Blair", "Neville Chamberlain"], answer: "Winston Churchill" },
+  { question: "Qual país invadiu a Polônia em 1939?", options: ["Japão", "Itália", "União Soviética", "Alemanha"], answer: "Alemanha" },
+  { question: "Em que ano a independência do Brasil foi proclamada?", options: ["1822", "1889", "1815", "1808"], answer: "1822" },
+  { question: "Quem foi o líder do movimento sul-africano contra o apartheid?", options: ["Thabo Mbeki", "Nelson Mandela", "F.W. de Klerk", "Desmond Tutu"], answer: "Nelson Mandela" },
+  { question: "Qual imperador romano foi assassinado em 44 a.C.?", options: ["Nero", "Júlio César", "Augusto", "Calígula"], answer: "Júlio César" },
+  { question: "Em que ano ocorreu a queda do Império Romano do Ocidente?", options: ["500", "476", "410", "395"], answer: "476" },
+  { question: "Quem foi o último czar da Rússia?", options: ["o Grande", "Nicolau II", "Ivan IV", "Alexandre III", "Pedro"], answer: "Nicolau II" },
+  { question: "Qual país colonizou a Índia antes da independência?", options: ["França", "Portugal", "Holanda", "Reino Unido"], answer: "Reino Unido" },
+  { question: "Quem foi o primeiro presidente dos Estados Unidos?", options: ["Abraham Lincoln", "John Adams", "Thomas Jefferson", "George Washington"], answer: "George Washington" },
+  { question: "Em que ano ocorreu a Revolução Chinesa que levou Mao Tse-Tung ao poder?", options: ["1937", "1950", "1949", "1945"], answer: "1949" },
+  { question: "Qual civilização construiu a cidade de Teotihuacán?", options: ["Maias", "Astecas", "Olmecas", "Incas"], answer: "Maias" },
+  { question: "Quem foi o líder do movimento pelos direitos civis nos EUA?", options: ["Frederick Douglass", "Rosa Parks", "Malcolm X", "Martin Luther King Jr."], answer: "Martin Luther King Jr." },
+  { question: "Em que ano terminou a Guerra Franco-Prussiana?", options: ["1866", "1871", "1875", "1880"], answer: "1871" },
+  { question: "Quem foi o explorador que circunavegou o globo primeiro?", options: ["Vasco da Gama", "Cristóvão Colombo", "Ferdinand Magellan", "James Cook"], answer: "Ferdinand Magellan" },
+  { question: "Qual país foi unificado por Otto von Bismarck?", options: ["Alemanha", "Itália", "Espanha", "França"], answer: "Alemanha" },
+  { question: "Quem inventou a imprensa?", options: ["Leonardo da Vinci", "Galileu Galilei", "Johannes Gutenberg", "Thomas Edison"], answer: "Johannes Gutenberg" },
+  { question: "Qual foi a principal cidade do Império Asteca?", options: ["Cuzco", "Chichén Itzá", "Teotihuacán", "Tenochtitlán"], answer: "Tenochtitlán" },
+  { question: "Em que ano começou a Guerra de 100 Anos?", options: ["1350", "1320", "1337", "1346"], answer: "1337" },
+  { question: "Quem foi o rei da França durante a Revolução Francesa?", options: ["Napoleão Bonaparte", "Henrique IV", "Carlos X", "Luis XVI"], answer: "Luis XVI" },
+  { question: "Qual foi o tratado que encerrou a Guerra de 30 anos?", options: ["Tratado de Versalhes", "Paz de Westfália", "Tratado de Tordesilhas", "Tratado de Paris"], answer: "Paz de Westfália" },
+  { question: "Quem liderou o movimento de independência da Argentina?", options: ["Simón Bolívar", "Bernardo O'Higgins", "Miguel Hidalgo", "José de San Martín"], answer: "José de San Martín" },
+  { question: "Qual foi a primeira civilização a usar escrita cuneiforme?", options: ["Sumérios", "Maias", "Fenícios", "Egípcios"], answer: "Sumérios" },
+  { question: "Quem foi o presidente do Brasil durante a ditadura militar iniciada em 1964?", options: ["Jânio Quadros", "Getúlio Vargas", "Castello Branco", "Juscelino Kubitschek"], answer: "Castello Branco" },
+  { question: "Em que ano a União Europeia foi oficialmente criada?", options: ["1989", "1990", "1993", "2000"], answer: "1993" },
+  { question: "Quem foi o líder da Revolução Cubana?", options: ["Che Guevara", "Fidel Castro", "Camilo Cienfuegos", "Raúl Castro"], answer: "Fidel Castro" },
+// Ciência
+  { question: "Qual é o maior planeta do nosso sistema solar?", options: ["Saturno", "Marte", "Terra", "Júpiter"], answer: "Júpiter" },
+  { question: "Qual é o símbolo químico para o ouro?", options: ["Au", "Fe", "Ag", "O"], answer: "Au" },
+  { question: "Quantos ossos tem o corpo humano adulto?", options: ["212", "198", "220", "206"], answer: "206" },
+  { question: "Qual cientista desenvolveu a teoria da relatividade?", options: ["Albert Einstein", "Nikola Tesla", "Galileu Galilei", "Isaac Newton"], answer: "Albert Einstein" },
+  { question: "Qual gás as plantas absorvem para a fotossíntese?", options: ["Nitrogênio", "Oxigênio", "Hidrogênio", "Dióxido de Carbono"], answer: "Dióxido de Carbono" },
+  { question: "Qual é o maior órgão do corpo humano?", options: ["Cérebro", "Coração", "Fígado", "Pele"], answer: "Pele" },
+  { question: "Qual é o elemento químico representado pelo símbolo O?", options: ["Óxido", "Oxigênio", "Ouro", "Ósmio"], answer: "Oxigênio" },
+  { question: "O que é fotossíntese?", options: ["Processo de respiração das plantas", "Processo de produção de alimentos das plantas", "Processo de reprodução das plantas", "Processo de defesa das plantas"], answer: "Processo de produção de alimentos das plantas" },
+  { question: "Qual é o planeta mais próximo do Sol?", options: ["Marte", "Mercúrio", "Vênus", "Terra"], answer: "Mercúrio" },
+  { question: "Qual é a principal fonte de energia para os seres vivos?", options: ["Sol", "Alimentos", "Ar", "Água"], answer: "Sol" },
+  { question: "O que é DNA?", options: ["Proteína", "Ácido ribonucleico", "Ácido nucléico", "Ácido desoxirribonucleico"], answer: "Ácido desoxirribonucleico" },
+  { question: "Qual é o principal gás responsável pelo efeito estufa?", options: ["Nitrogênio", "Oxigênio", "Metano", "Dióxido de carbono"], answer: "Dióxido de carbono" },
+  { question: "Em qual parte da célula ocorre a respiração celular?", options: ["Membrana plasmática", "Núcleo", "Mitocôndria", "Citoplasma"], answer: "Mitocôndria" },
+  { question: "Qual é o processo que transforma a água líquida em vapor?", options: ["Solidificação", "Evaporação", "Congelação", "Condensação"], answer: "Evaporação" },
+  { question: "Quem propôs a teoria da relatividade?", options: ["Nikola Tesla", "Galileu Galilei", "Albert Einstein", "Isaac Newton"], answer: "Albert Einstein" },
+  { question: "Qual é a função dos ribossomos nas células?", options: ["Produzir proteínas", "Controlar a divisão celular", "Armazenar energia", "Defender a célula"], answer: "Produzir proteínas" },
+  { question: "O que é um ecossistema?", options: ["Uma área de terra", "Conjunto de organismos vivos e seu ambiente", "Uma espécie de planta", "Uma cadeia alimentar"], answer: "Conjunto de organismos vivos e seu ambiente" },
+  { question: "Qual é a unidade básica de um ser vivo?", options: ["Célula", "Sistema", "Órgão", "Tecido"], answer: "Célula" },
+  { question: "Qual a principal função do sistema circulatório?", options: ["Produção de hormônios", "Transporte de oxigênio e dióxido de carbono", "Transporte de nutrientes", "Respiração"], answer: "Transporte de oxigênio e dióxido de carbono" },
+  { question: "Qual é o maior animal terrestre?", options: ["Baleia", "Girafa", "Leão", "Elefante"], answer: "Elefante" },
+  { question: "Em que parte do corpo humano é produzido o sangue?", options: ["Coração", "Fígado", "Rim", "Medula óssea"], answer: "Medula óssea" },
+  { question: "O que é a tectônica de placas?", options: ["Teoria sobre a movimentação das massas de ar", "Teoria sobre o movimento dos oceanos", "Teoria sobre os movimentos das placas continentais", "Teoria sobre a formação do solo"], answer: "Teoria sobre os movimentos das placas continentais" },
+  { question: "Quem descobriu a penicilina?", options: ["Louis Pasteur", "Alexander Fleming", "Marie Curie", "Albert Einstein"], answer: "Alexander Fleming" },
+  { question: "Qual é o nome do processo que as plantas utilizam para produzir seu alimento?", options: ["Fermentação", "Digestão", "Fotossíntese", "Respiração celular"], answer: "Fotossíntese" },
+  { question: "Qual é o estado físico da água a 0°C?", options: ["Sólido", "Plasma", "Líquido", "Gasoso"], answer: "Sólido" },
+  { question: "O que é um átomo?", options: ["Uma molécula", "Um tipo de energia", "A menor partícula de um elemento", "Uma célula viva"], answer: "A menor partícula de um elemento" },
+  { question: "Em que estado a água se encontra a 100°C?", options: ["Plasma", "Sólido", "Gasoso", "Líquido"], answer: "Gasoso" },
+  { question: "Qual é a principal função do sistema nervoso?", options: ["Coordenar os movimentos", "Produzir hormônios", "Regenerar células", "Transportar oxigênio"], answer: "Coordenar os movimentos" },
+  { question: "Qual é o principal combustível usado nas usinas nucleares?", options: ["Gás natural", "Água", "Carvão", "Uranium"], answer: "Uranium" },
+  { question: "Qual a camada mais externa da Terra?", options: ["Litosfera", "Manto", "Troposfera", "Núcleo"], answer: "Litosfera" },
+  { question: "O que é a biodiversidade?", options: ["Variedade de organismos em um ecossistema", "Variedade de organismos microscópicos", "Número de espécies de plantas", "Diversidade de solos"], answer: "Variedade de organismos em um ecossistema" },
+  { question: "Quem foi o inventor da lâmpada incandescente?", options: ["Nikola Tesla", "Thomas Edison", "Galileu Galilei", "Albert Einstein"], answer: "Thomas Edison" },
+  { question: "Qual é o nome da camada de ozônio?", options: ["Exosfera", "Estratosfera", "Troposfera", "Termosfera"], answer: "Estratosfera" },
+  { question: "O que é um gene?", options: ["Uma molécula de oxigênio", "Uma sequência de DNA que define características", "Uma célula", "Uma proteína"], answer: "Uma sequência de DNA que define características" },
+  { question: "Qual é a diferença entre um vírus e uma bactéria?", options: ["Vírus são menores e não têm células", "Bactérias não têm DNA", "Bactérias são maiores e não têm células", "Vírus não causam doenças"], answer: "Vírus são menores e não têm células" },
+  { question: "Qual é a função dos leucócitos no sangue?", options: ["Combater infecções", "Transportar nutrientes", "Transportar oxigênio", "Coagular o sangue"], answer: "Combater infecções" },
+  { question: "Qual é a principal fonte de oxigênio para os seres vivos?", options: ["Oceanos", "Solo", "Plantas", "Animais"], answer: "Plantas" },
+  { question: "O que é a fototropismo nas plantas?", options: ["Movimento para longe da água", "Crescimento em direção ao solo", "Movimento das plantas em direção à luz", "Movimento das raízes para baixo"], answer: "Movimento das plantas em direção à luz" },
+  { question: "O que são os átomos de carbono em uma molécula de glicose?", options: ["Átomos de hidrogênio", "Átomos de oxigênio", "Átomos de nitrogênio", "Átomos de carbono"], answer: "Átomos de carbono" },
+  { question: "Qual é o nome do processo de transformação de uma substância de sólido para gasoso?", options: ["Fusão", "Sublimação", "Condensação", "Evaporação"], answer: "Sublimação" },
+  { question: "Qual é o planeta conhecido como "Planeta Vermelho"?", options: ["Marte", "Vênus", "Saturno", "Júpiter"], answer: "Marte" },
+  { question: "Qual o nome do nosso satélite natural?", options: ["Lua", "Júpiter", "Estrela Polar", "Sol"], answer: "Lua" },
+  { question: "Qual é a função das mitocôndrias nas células?", options: ["Controlar a divisão celular", "Produzir energia", "Armazenar energia", "Produzir proteínas"], answer: "Produzir energia" },
+  { question: "O que é a força de gravidade?", options: ["Força que repele objetos", "Força que causa a movimentação dos planetas", "Força que atrai a Lua para a Terra", "Força que atrai objetos para o centro da Terra"], answer: "Força que atrai objetos para o centro da Terra" },
+  { question: "Qual é o elemento mais abundante na crosta terrestre?", options: ["Oxigênio", "Alumínio", "Silício", "Ferro"], answer: "Oxigênio" },
+  { question: "Qual o nome do processo que converte a luz solar em energia pelas plantas?", options: ["Fermentação", "Respiração celular", "Fotossíntese", "Digestão"], answer: "Fotossíntese" },
+  { question: "Em qual parte do corpo humano estão localizados os neurônios?", options: ["Pâncreas", "Estômago", "Cérebro", "Coração"], answer: "Cérebro" },
+  { question: "Qual é o maior planeta do sistema solar?", options: ["Terra", "Júpiter", "Saturno", "Urano"], answer: "Júpiter" },
+  { question: "O que é uma cadeia alimentar?", options: ["Formação de rochas", "Sequência de organismos que se alimentam uns dos outros", "Ciclo da água", "Processo de fotossíntese"], answer: "Sequência de organismos que se alimentam uns dos outros" },
+  { question: "Qual é o nome da teoria que descreve a origem do universo?", options: ["Teoria da Evolução", "Teoria da Gravidade", "Teoria do Big Bang", "Teoria da Relatividade"], answer: "Teoria do Big Bang" },
+  { question: "O que é a evaporação?", options: ["Mudança de estado da água de gasoso para líquido", "Mudança de estado da água de líquido para sólido", "Mudança de estado da água de líquido para gás", "Mudança de estado da água de sólido para líquido"], answer: "Mudança de estado da água de líquido para gás" },
+  { question: "Qual é a parte do cérebro responsável pelo controle dos movimentos voluntários?", options: ["Hipotálamo", "Cerebelo", "Medula espinhal", "Cérebro"], answer: "Cerebelo" },
+  { question: "Qual é a unidade básica de medida para a intensidade de corrente elétrica?", options: ["Watt", "Volt", "Ohm", "Amperes"], answer: "Amperes" },
+// Geografia
+  { question: "Qual é o maior oceano do mundo?", options: ["Ártico", "Atlântico", "Índico", "Pacífico"], answer: "Pacífico" },
+  { question: "Em que continente fica o Egito?", options: ["África", "Europa", "Ásia", "Oceania"], answer: "África" },
+  { question: "Qual é a capital da Austrália?", options: ["Camberra", "Melbourne", "Sydney", "Perth"], answer: "Camberra" },
+  { question: "Qual é o rio mais longo do mundo?", options: ["Nilo", "Mississipi", "Amazonas", "Yangtzé"], answer: "Amazonas" },
+  { question: "Qual país é conhecido como a 'Terra do Sol Nascente'?", options: ["Coreia do Sul", "China", "Tailândia", "Japão"], answer: "Japão" },
+  { question: "Onde fica o Monte Everest?", options: ["Índia", "Paquistão", "Nepal", "China"], answer: "Nepal" },
+  { question: "Onde está localizada a Floresta Amazônica?", options: ["Equador", "Brasil", "Peru", "Colômbia"], answer: "Brasil" },
+  { question: "Onde se encontra o Deserto do Saara?", options: ["América do Sul", "Ásia", "América do Norte", "África"], answer: "África" },
+  { question: "Onde fica o maior lago do mundo em volume de água?", options: ["Brasil", "Canadá", "Rússia", "Cazaquistão"], answer: "Rússia" },
+  { question: "Onde está localizado o Rio Nilo?", options: ["Egito", "Níger", "Marrocos", "África do Sul"], answer: "Egito" },
+  { question: "Onde se encontra a Cordilheira dos Andes?", options: ["América do Norte", "América do Sul", "Ásia", "África"], answer: "América do Sul" },
+  { question: "Onde está o deserto de Atacama?", options: ["Chile", "Bolívia", "Peru", "Argentina"], answer: "Chile" },
+  { question: "Onde está o Monte Kilimanjaro?", options: ["Quênia", "Uganda", "Etiópia", "Tanzânia"], answer: "Tanzânia" },
+  { question: "Onde se localiza o maior rio do mundo em extensão?", options: ["Nilo", "Yangtze", "Mississippi", "Amazônia"], answer: "Amazônia" },
+  { question: "Onde fica a cidade de Petra?", options: ["Jordânia", "Egito", "Irã", "Síria"], answer: "Jordânia" },
+  { question: "Onde está o maior deserto do mundo?", options: ["Saara", "Kalahari", "Antártica", "Gobi"], answer: "Antártica" },
+  { question: "Onde se localiza a Grande Barreira de Coral?", options: ["Filipinas", "Indonésia", "Austrália", "Malásia"], answer: "Austrália" },
+  { question: "Onde fica a cidade de Machu Picchu?", options: ["Peru", "Bolívia", "Chile", "Equador"], answer: "Peru" },
+  { question: "Onde está o Parque Nacional de Yellowstone?", options: ["México", "Colômbia", "Estados Unidos", "Canadá"], answer: "Estados Unidos" },
+  { question: "Onde se localiza o Canal do Panamá?", options: ["Honduras", "Colômbia", "Panamá", "Costa Rica"], answer: "Panamá" },
+  { question: "Onde se encontra o Lago Baikal?", options: ["Canadá", "Estados Unidos", "Rússia", "China"], answer: "Rússia" },
+  { question: "Onde está a cidade de Veneza?", options: ["Grécia", "Espanha", "Itália", "França"], answer: "Itália" },
+  { question: "Onde se localiza a ilha de Madagascar?", options: ["África", "Oceania", "América", "Ásia"], answer: "África" },
+  { question: "Onde está localizada a cidade de Sydney?", options: ["Austrália", "Papua-Nova Guiné", "Nova Zelândia", "Ilhas Fiji"], answer: "Austrália" },
+  { question: "Onde está o maior arquipélago do mundo?", options: ["Malásia", "Filipinas", "Japão", "Indonésia"], answer: "Indonésia" },
+  { question: "Onde fica o Monte Fuji?", options: ["Coreia do Sul", "Taiwan", "China", "Japão"], answer: "Japão" },
+  { question: "Onde está localizado o Taj Mahal?", options: ["Nepal", "Sri Lanka", "Paquistão", "Índia"], answer: "Índia" },
+  { question: "Onde se encontra o Lago Titicaca?", options: ["Equador", "Chile", "Peru", "Bolívia"], answer: "Peru" },
+  { question: "Onde se localiza o Parque Nacional de Banff?", options: ["Estados Unidos", "Canadá", "Argentina", "México"], answer: "Canadá" },
+  { question: "Onde fica o país de Luxemburgo?", options: ["Oceania", "África", "Europa", "América do Norte"], answer: "Europa" },
+  { question: "Onde fica a Ilha de Páscoa?", options: ["Fiji", "Indonésia", "Chile", "Polinésia Francesa"], answer: "Chile" },
+  { question: "Onde se localiza o Delta do Okavango?", options: ["Namíbia", "África do Sul", "Zâmbia", "Botsuana"], answer: "Botsuana" },
+  { question: "Onde fica o Monte McKinley?", options: ["Canadá", "Chile", "Argentina", "Alasca"], answer: "Alasca" },
+  { question: "Onde fica a cidade de Nova York?", options: ["México", "Canadá", "Estados Unidos", "Cuba"], answer: "Estados Unidos" },
+  { question: "Onde está localizada a cidade de Cairo?", options: ["Marrocos", "Egito", "Tunísia", "Líbano"], answer: "Egito" },
+  { question: "Onde fica o Rio Amazonas?", options: ["Brasil", "Colômbia", "Venezuela", "Peru"], answer: "Brasil" },
+  { question: "Onde está o Parque Nacional de Kruger?", options: ["Namíbia", "Botsuana", "África do Sul", "Quênia"], answer: "África do Sul" },
+  { question: "Onde se encontra a cidade de Istambul?", options: ["Turquia", "Sérvia", "Egito", "Grécia"], answer: "Turquia" },
+  { question: "Onde fica o Monte Everest?", options: ["Índia", "China", "Nepal", "Paquistão"], answer: "Nepal" },
+  { question: "Onde se localiza o Parque Nacional Torres del Paine?", options: ["Chile", "Peru", "Brasil", "Argentina"], answer: "Chile" },
+  { question: "Onde fica a cidade de Buenos Aires?", options: ["Chile", "Uruguai", "Brasil", "Argentina"], answer: "Argentina" },
+  { question: "Onde está o Cabo da Boa Esperança?", options: ["Namíbia", "África do Sul", "Mozambique", "Angola"], answer: "África do Sul" },
+  { question: "Onde fica a cidade de Roma?", options: ["Itália", "França", "Portugal", "Espanha"], answer: "Itália" },
+  { question: "Onde está localizada a Ilha de Fernando de Noronha?", options: ["Brasil", "Uruguai", "Argentina", "Chile"], answer: "Brasil" },
+  { question: "Onde fica o Parque Nacional da Serra da Canastra?", options: ["Equador", "Colômbia", "Brasil", "Peru"], answer: "Brasil" },
+  { question: "Onde está o país de Nepal?", options: ["Ásia", "América do Sul", "África", "Oceania"], answer: "Ásia" },
+  { question: "Onde fica o deserto de Kalahari?", options: ["África", "Ásia", "América do Norte", "América do Sul"], answer: "África" },
+  { question: "Onde se localiza a cidade de São Petersburgo?", options: ["Ucrânia", "Rússia", "Finlândia", "Polônia"], answer: "Rússia" },
+  { question: "Onde está o ponto mais baixo da Terra?", options: ["Deserto de Atacama", "Mar Morto", "Oceano Pacífico", "Vale da Morte"], answer: "Mar Morto" },
+  { question: "Onde se localiza o Rio Danúbio?", options: ["Europa", "Ásia", "África", "América do Sul"], answer: "Europa" },
+  { question: "Onde se encontra o Arquipélago de Galápagos?", options: ["Brasil", "Peru", "Chile", "Equador"], answer: "Equador" },
+  { question: "Onde fica o Pico da Neblina?", options: ["Peru", "Venezuela", "Colômbia", "Brasil"], answer: "Brasil" },
+  { question: "Onde se localiza a cidade de Toronto?", options: ["México", "Estados Unidos", "Jamaica", "Canadá"], answer: "Canadá" },
+  { question: "Onde fica a cidade de Cidade do Cabo?", options: ["Namíbia", "África do Sul", "Botsuana", "Zimbábue"], answer: "África do Sul" },
+  { question: "Onde se encontra o Rio Ganges?", options: ["Índia", "Paquistão", "Nepal", "Bangladesh"], answer: "Índia" },
+  { question: "Onde se localiza a cidade de Santiago?", options: ["Uruguai", "Argentina", "Chile", "Peru"], answer: "Chile" },
+  { question: "Onde está a cidade de Dubai?", options: ["Irã", "Emirados Árabes Unidos", "Arábia Saudita", "Kuwait"], answer: "Emirados Árabes Unidos" },
+// Esportes
+  { question: "Quantos jogadores um time de futebol tem em campo?", options: ["12", "11", "9", "10"], answer: "11" },
+  { question: "Qual país sediou a Copa do Mundo de 2014?", options: ["África do Sul", "Alemanha", "Rússia", "Brasil"], answer: "Brasil" },
+  { question: "Qual atleta é conhecido como 'O Rei do Futebol'?", options: ["Messi", "Cristiano Ronaldo", "Pelé", "Maradona"], answer: "Pelé" },
+  { question: "Em que esporte Michael Jordan se destacou?", options: ["Beisebol", "Basquete", "Tênis", "Futebol Americano"], answer: "Basquete" },
+  { question: "Qual é a corrida de ciclismo mais famosa do mundo?", options: ["Vuelta a España", "Tour de France", "Paris-Roubaix", "Giro d'Italia"], answer: "Tour de France" },
+  { question: "Quem venceu a Copa do Mundo de Futebol em 2018?", options: ["Croácia", "Brasil", "França", "Alemanha"], answer: "França" },
+  { question: "Quantos jogadores compõem um time de vôlei em quadra?", options: ["4", "7", "6", "5"], answer: "6" },
+  { question: "Em que país foram realizados os Jogos Olímpicos de 2016?", options: ["China", "Rússia", "Brasil", "Japão"], answer: "Brasil" },
+  { question: "Quem é considerado o maior nadador olímpico da história?", options: ["Ian Thorpe", "César Cielo", "Mark Spitz", "Michael Phelps"], answer: "Michael Phelps" },
+  { question: "Qual país tem mais títulos da Copa do Mundo de Futebol?", options: ["Brasil", "Argentina", "Alemanha", "Itália"], answer: "Brasil" },
+  { question: "Quem é o maior artilheiro da história da Seleção Brasileira?", options: ["Neymar", "Ronaldo", "Pelé", "Romário"], answer: "Neymar" },
+  { question: "Qual é o esporte principal praticado em Wimbledon?", options: ["Golfe", "Futebol", "Tênis", "Críquete"], answer: "Tênis" },
+  { question: "Quantos minutos dura uma partida oficial de futebol?", options: ["45", "60", "90", "120"], answer: "90" },
+  { question: "Quem é conhecido como 'Bolt das pistas'?", options: ["Carl Lewis", "Usain Bolt", "Tyson Gay", "Asafa Powell"], answer: "Usain Bolt" },
+  { question: "Quantos anéis possui o símbolo das Olimpíadas?", options: ["5", "7", "4", "6"], answer: "5" },
+  { question: "Qual atleta ganhou 7 títulos de Fórmula 1?", options: ["Lewis Hamilton", "Sebastian Vettel", "Ayrton Senna", "Michael Schumacher"], answer: "Michael Schumacher" },
+  { question: "Qual esporte utiliza uma prancha e ondas?", options: ["Windsurf", "Canoagem", "Surfe", "Remo"], answer: "Surfe" },
+  { question: "Quem é o maior campeão da história da NBA?", options: ["Los Angeles Lakers", "Golden State Warriors", "Chicago Bulls", "Boston Celtics"], answer: "Boston Celtics" },
+  { question: "Em que esporte se destaca Simone Biles?", options: ["Ginástica Artística", "Natação", "Patinação", "Atletismo"], answer: "Ginástica Artística" },
+  { question: "Qual é o país de origem do judô?", options: ["Coreia do Sul", "Japão", "Tailândia", "China"], answer: "Japão" },
+  { question: "Quantas voltas tem uma maratona olímpica?", options: ["10", "42", "5", "Nenhuma {prova única}"], answer: "Nenhuma {prova única}" },
+  { question: "Quem venceu a Copa do Mundo de Futebol de 2002?", options: ["França", "Alemanha", "Brasil", "Itália"], answer: "Brasil" },
+  { question: "Qual é o principal campeonato de futebol da Europa?", options: ["La Liga", "Premier League", "Champions League", "Eurocopa"], answer: "Champions League" },
+  { question: "Quem foi Ayrton Senna?", options: ["Tenista", "Jogador de futebol", "Nadador", "Piloto de Fórmula 1"], answer: "Piloto de Fórmula 1" },
+  { question: "Qual esporte é conhecido como 'esporte bretão'?", options: ["Críquete", "Rúgbi", "Futebol", "Tênis"], answer: "Futebol" },
+  { question: "Em que país nasceu Lionel Messi?", options: ["Argentina", "Uruguai", "Espanha", "Brasil"], answer: "Argentina" },
+  { question: "Qual o nome da competição entre seleções da América do Sul?", options: ["Libertadores", "Eurocopa", "Copa América", "Copa Ouro"], answer: "Copa América" },
+  { question: "Qual foi o país sede da Copa do Mundo de 2014?", options: ["Alemanha", "Rússia", "África do Sul", "Brasil"], answer: "Brasil" },
+  { question: "Em que ano o Brasil sediou a sua primeira Copa do Mundo?", options: ["1962", "1970", "1950", "2014"], answer: "1950" },
+  { question: "Qual o nome do famoso estádio do Rio de Janeiro?", options: ["Beira-Rio", "Mineirão", "Maracanã", "Morumbi"], answer: "Maracanã" },
+  { question: "Qual país é referência no críquete?", options: ["Espanha", "Índia", "Alemanha", "Brasil"], answer: "Índia" },
+  { question: "Quem ganhou o título da Fórmula 1 em 2021?", options: ["Sebastian Vettel", "Lewis Hamilton", "Valtteri Bottas", "Max Verstappen"], answer: "Max Verstappen" },
+  { question: "Quantas medalhas de ouro o Brasil conquistou em Tóquio 2020?", options: ["7", "9", "5", "8"], answer: "7" },
+  { question: "Qual o nome da principal competição de clubes da América do Sul?", options: ["Sul-Americana", "Libertadores", "Brasileirão", "Recopa"], answer: "Libertadores" },
+  { question: "Em que país nasceu Novak Djokovic?", options: ["Sérvia", "Suíça", "Espanha", "Rússia"], answer: "Sérvia" },
+  { question: "Qual é o nome do esporte com tacos e buracos?", options: ["Golfe", "Polo", "Beisebol", "Croqué"], answer: "Golfe" },
+  { question: "Qual é o país sede dos Jogos Olímpicos de 2024?", options: ["China", "França", "EUA", "Japão"], answer: "França" },
+  { question: "Em que esporte é usada uma raquete e volante?", options: ["Tênis de mesa", "Squash", "Badminton", "Tênis"], answer: "Badminton" },
+  { question: "Qual é o nome da liga de futebol dos EUA?", options: ["NFL", "MLS", "NBA", "MLB"], answer: "MLS" },
+  { question: "Qual é o nome da liga de beisebol americana?", options: ["NHL", "NBA", "NFL", "MLB"], answer: "MLB" },
+  { question: "Qual é o time com mais títulos da Libertadores?", options: ["Boca Juniors", "Independiente", "São Paulo", "River Plate"], answer: "Independiente" },
+  { question: "Quem foi o craque brasileiro apelidado de 'Fenômeno'?", options: ["Zico", "Ronaldo", "Pelé", "Ronaldinho"], answer: "Ronaldo" },
+  { question: "Quem é o atual recordista dos 100 metros rasos?", options: ["Usain Bolt", "Asafa Powell", "Carl Lewis", "Tyson Gay"], answer: "Usain Bolt" },
+  { question: "Qual país sediou os Jogos Olímpicos de 2008?", options: ["China", "Grécia", "Inglaterra", "Alemanha"], answer: "China" },
+  { question: "Qual é o esporte de Conor McGregor?", options: ["MMA", "Judô", "Caratê", "Boxe"], answer: "MMA" },
+  { question: "Quem é o maior vencedor do Tour de France?", options: ["Eddy Merckx", "Bernard Hinault", "Miguel Indurain", "Lance Armstrong*"], answer: "Eddy Merckx" },
+  { question: "Qual é o nome do campeonato brasileiro de futebol?", options: ["Brasileirão", "Copa do Brasil", "Série B", "Paulistão"], answer: "Brasileirão" },
+  { question: "Qual o nome da ginasta brasileira campeã mundial?", options: ["Rebeca Andrade", "Daiane dos Santos", "Daniele Hypólito", "Jade Barbosa"], answer: "Rebeca Andrade" },
+  { question: "Em que esporte Guga Kuerten se destacou?", options: ["Basquete", "Vôlei", "Tênis", "Futebol"], answer: "Tênis" },
+  { question: "Qual país venceu a Copa do Mundo Feminina de 2019?", options: ["EUA", "Brasil", "Holanda", "Alemanha"], answer: "EUA" },
+  { question: "Quem é conhecido como 'O Rei do Futebol'?", options: ["Maradona", "Pelé", "Ronaldo", "Zidane"], answer: "Pelé" },
+  { question: "Qual esporte é praticado na NBA?", options: ["Beisebol", "Hóquei", "Futebol", "Basquete"], answer: "Basquete" },
+  { question: "Qual é a principal competição de clubes da Europa?", options: ["Europa League", "Conference League", "Champions League", "Premier League"], answer: "Champions League" },
+  { question: "Quem venceu a Copa do Mundo de 1994?", options: ["Itália", "Alemanha", "Argentina", "Brasil"], answer: "Brasil" },
+  { question: "Quantas Copas do Mundo o Brasil já venceu?", options: ["5", "4", "6", "3"], answer: "5" },
+  { question: "Em qual cidade estão localizadas as 24 Horas de Le Mans?", options: ["Paris", "Nice", "Le Mans", "Mônaco"], answer: "Le Mans" },
+            // Cultura Pop
+            { question: "Qual banda é conhecida pelo álbum 'The Dark Side of the Moon'?", options: ["The Beatles", "Led Zeppelin", "Pink Floyd", "Queen"], answer: "Pink Floyd" },
+            { question: "Quem escreveu 'Harry Potter'?", options: ["J.R.R. Tolkien", "George R.R. Martin", "J.K. Rowling", "Stephen King"], answer: "J.K. Rowling" },
+            { question: "Qual é o nome do super-herói bilionário da DC Comics?", options: ["Superman", "Homem de Ferro", "Batman", "Capitão América"], answer: "Batman" },
+            { question: "Qual filme ganhou o Oscar de Melhor Filme em 2020?", options: ["1917", "Coringa", "Parasita", "Era uma Vez em Hollywood"], answer: "Parasita" },
+            { question: "Qual o nome do personagem principal da série 'Breaking Bad'?", options: ["Jesse Pinkman", "Saul Goodman", "Walter White", "Gus Fring"], answer: "Walter White" },
+            // Variedades
+            { question: "Qual a cor resultante da mistura de azul e amarelo?", options: ["Verde", "Laranja", "Roxo", "Marrom"], answer: "Verde" },
+            { question: "Qual destes animais é um mamífero?", options: ["Tubarão", "Pinguim", "Baleia", "Crocodilo"], answer: "Baleia" },
+            { question: "Quantos lados tem um hexágono?", options: ["5", "6", "7", "8"], answer: "6" },
+            { question: "Qual o prato principal da culinária japonesa?", options: ["Taco", "Pizza", "Sushi", "Paella"], answer: "Sushi" },
+            { question: "Qual é o idioma oficial de Portugal?", options: ["Espanhol", "Português", "Francês", "Inglês"], answer: "Português" },
+            { question: "Qual o coletivo de cães?", options: ["Manada", "Alcateia", "Matilha", "Rebanho"], answer: "Matilha" },
+            { question: "Quem pintou a Mona Lisa?", options: ["Vincent van Gogh", "Pablo Picasso", "Leonardo da Vinci", "Michelangelo"], answer: "Leonardo da Vinci" },
+        ];
+
+
+        // ===================================
+        // ======== ELEMENTOS DO DOM =========
+        // ===================================
+        const setupScreen = document.getElementById('setup-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const resultScreen = document.getElementById('result-screen');
+
+        const playerCountSelector = document.getElementById('player-count-selector');
+        const roundsSlider = document.getElementById('rounds-slider');
+        const roundsValue = document.getElementById('rounds-value');
+        const scoreDisplayMode = document.getElementById('score-display-mode');
+        const startGameBtn = document.getElementById('start-game-btn');
+        
+        const currentRoundSpan = document.getElementById('current-round');
+        const totalRoundsSpan = document.getElementById('total-rounds');
+        const currentPlayerIndicator = document.getElementById('current-player-indicator');
+        const currentPlayerNameSpan = document.getElementById('current-player-name');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+
+        const feedbackOverlay = document.getElementById('feedback-overlay');
+        const feedbackIcon = document.getElementById('feedback-icon');
+        const feedbackText = document.getElementById('feedback-text');
+        const feedbackDetails = document.getElementById('feedback-details');
+        
+        const realtimeScoreboard = document.getElementById('realtime-scoreboard');
+        const realtimeScores = document.getElementById('realtime-scores');
+
+        const winnerAnnouncement = document.getElementById('winner-announcement');
+        const finalScoreboard = document.getElementById('final-scoreboard');
+        const restartGameBtn = document.getElementById('restart-game-btn');
+        const shareResultBtn = document.getElementById('share-result-btn');
+
+        // ===================================
+        // ======== ESTADO DO JOGO ===========
+        // ===================================
+        let gameState = {
+            settings: {
+                numPlayers: 2,
+                numRounds: 10,
+                scoreMode: 'realtime', // 'realtime' or 'final'
+            },
+            players: [],
+            currentRound: 1,
+            currentPlayerIndex: 0,
+            currentQuestion: null,
+            usedQuestionIndices: new Set(),
+            shuffledQuestions: []
+        };
+        
+        const playerColors = [
+            'bg-blue-600', 'bg-red-600', 'bg-yellow-500', 'bg-green-600', 'bg-purple-600', 'bg-pink-600'
+        ];
+
+        // ===================================
+        // ======== EFEITOS SONOROS ========
+        // ===================================
+        let sounds;
+        function setupSounds() {
+            if (!sounds) {
+                sounds = {
+                    correct: new Tone.Synth({ oscillator: { type: 'triangle' }, envelope: { attack: 0.01, decay: 0.2, sustain: 0.1, release: 0.2 } }).toDestination(),
+                    error: new Tone.Synth({ oscillator: { type: 'square' }, envelope: { attack: 0.01, decay: 0.3, sustain: 0, release: 0.3 } }).toDestination(),
+                    winner: new Tone.PolySynth(Tone.Synth).toDestination(),
+                    click: new Tone.MembraneSynth().toDestination()
+                };
+            }
+        }
+        
+        function playSound(soundName) {
+            if(!sounds) return;
+            try {
+                switch(soundName) {
+                    case 'correct':
+                        sounds.correct.triggerAttackRelease('C5', '8n', Tone.now());
+                        break;
+                    case 'error':
+                        sounds.error.triggerAttackRelease('E3', '8n', Tone.now());
+                        break;
+                    case 'winner':
+                        const now = Tone.now();
+                        sounds.winner.triggerAttackRelease(['C4', 'E4', 'G4', 'C5'], '8n', now);
+                        sounds.winner.triggerAttackRelease(['E4', 'G4', 'C5', 'E5'], '8n', now + 0.2);
+                        sounds.winner.triggerAttackRelease(['G4', 'C5', 'E5', 'G5'], '8n', now + 0.4);
+                        break;
+                    case 'click':
+                        sounds.click.triggerAttackRelease('C2', '8n', Tone.now());
+                        break;
+                }
+            } catch (e) {
+                console.warn("Audio could not be played.", e);
+            }
+        }
+        
+        // ===================================
+        // ======== LÓGICA PRINCIPAL =========
+        // ===================================
+        
+        // ---- INICIALIZAÇÃO ----
+        function init() {
+            lucide.createIcons();
+            setupPlayerCountButtons();
+            
+            // Event Listeners da tela de configuração
+            playerCountSelector.addEventListener('click', handlePlayerCountSelection);
+            roundsSlider.addEventListener('input', (e) => {
+                gameState.settings.numRounds = parseInt(e.target.value);
+                roundsValue.textContent = gameState.settings.numRounds;
+            });
+            scoreDisplayMode.addEventListener('click', handleScoreModeSelection);
+            startGameBtn.addEventListener('click', startGame);
+            
+            // Event Listeners da tela de resultado
+            restartGameBtn.addEventListener('click', () => location.reload());
+            shareResultBtn.addEventListener('click', shareResult);
+
+            // Iniciar o contexto de áudio com um gesto do usuário
+            document.body.addEventListener('click', async () => {
+                if (Tone.context.state !== 'running') {
+                    await Tone.start();
+                    console.log('Audio context started');
+                }
+                setupSounds();
+            }, { once: true });
+        }
+
+        // ---- TELA DE CONFIGURAÇÃO ----
+        function setupPlayerCountButtons() {
+            playerCountSelector.innerHTML = '';
+            for (let i = 2; i <= 6; i++) {
+                const button = document.createElement('button');
+                button.dataset.players = i;
+                button.textContent = i;
+                button.className = `player-count-btn font-bold py-2 rounded-lg transition-colors ${i === gameState.settings.numPlayers ? 'bg-indigo-600 text-white' : 'bg-gray-700 text-gray-300'}`;
+                playerCountSelector.appendChild(button);
+            }
+        }
+
+        function handlePlayerCountSelection(e) {
+            if (e.target.classList.contains('player-count-btn')) {
+                playSound('click');
+                gameState.settings.numPlayers = parseInt(e.target.dataset.players);
+                document.querySelectorAll('.player-count-btn').forEach(btn => {
+                    btn.classList.remove('bg-indigo-600', 'text-white');
+                    btn.classList.add('bg-gray-700', 'text-gray-300');
+                });
+                e.target.classList.add('bg-indigo-600', 'text-white');
+                e.target.classList.remove('bg-gray-700', 'text-gray-300');
+            }
+        }
+
+        function handleScoreModeSelection(e) {
+            if (e.target.classList.contains('score-mode-btn')) {
+                playSound('click');
+                gameState.settings.scoreMode = e.target.dataset.mode;
+                 document.querySelectorAll('.score-mode-btn').forEach(btn => {
+                    btn.classList.remove('bg-indigo-600', 'text-white');
+                    btn.classList.add('bg-gray-700', 'text-gray-300');
+                });
+                e.target.classList.add('bg-indigo-600', 'text-white');
+                e.target.classList.remove('bg-gray-700', 'text-gray-300');
+            }
+        }
+
+        // ---- TRANSIÇÃO DE TELAS ----
+        function showScreen(screenId) {
+            setupScreen.classList.add('hidden');
+            gameScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            document.getElementById(screenId).classList.remove('hidden');
+        }
+        
+        // ---- INÍCIO DO JOGO ----
+        function startGame() {
+            playSound('click');
+
+            // 1. Inicializar jogadores
+            gameState.players = [];
+            for (let i = 0; i < gameState.settings.numPlayers; i++) {
+                gameState.players.push({
+                    id: i + 1,
+                    name: `Jogador ${i + 1}`,
+                    score: 0,
+                    color: playerColors[i]
+                });
+            }
+            
+            // 2. Embaralhar perguntas
+            gameState.shuffledQuestions = [...questions].sort(() => Math.random() - 0.5);
+            gameState.usedQuestionIndices.clear();
+            
+            // 3. Resetar estado do jogo
+            gameState.currentRound = 1;
+            gameState.currentPlayerIndex = 0;
+            
+            // 4. Iniciar a primeira rodada
+            nextRound();
+
+            // 5. Mudar para a tela do jogo
+            showScreen('game-screen');
+        }
+        
+        // ---- LÓGICA DA RODADA ----
+        function nextRound() {
+            if (gameState.currentRound > gameState.settings.numRounds) {
+                endGame();
+                return;
+            }
+            
+            gameState.currentPlayerIndex = 0;
+            pickNewQuestion();
+            updateGameUI();
+
+            if(gameState.settings.scoreMode === 'realtime') {
+                realtimeScoreboard.classList.remove('hidden');
+                updateRealtimeScoreboard();
+            } else {
+                realtimeScoreboard.classList.add('hidden');
+            }
+        }
+
+        function pickNewQuestion() {
+            if (gameState.usedQuestionIndices.size === gameState.shuffledQuestions.length) {
+                // Reinicia se todas as perguntas foram usadas
+                gameState.usedQuestionIndices.clear();
+            }
+
+            let questionIndex = -1;
+            do {
+                questionIndex = Math.floor(Math.random() * gameState.shuffledQuestions.length);
+            } while (gameState.usedQuestionIndices.has(questionIndex));
+            
+            gameState.usedQuestionIndices.add(questionIndex);
+            gameState.currentQuestion = gameState.shuffledQuestions[questionIndex];
+        }
+
+        // ---- ATUALIZAÇÃO DA UI DO JOGO ----
+        function updateGameUI() {
+            const currentPlayer = gameState.players[gameState.currentPlayerIndex];
+            
+            currentRoundSpan.textContent = gameState.currentRound;
+            totalRoundsSpan.textContent = gameState.settings.numRounds;
+            
+            currentPlayerNameSpan.textContent = currentPlayer.name;
+            currentPlayerIndicator.className = `text-lg font-bold p-2 rounded-lg text-center transition-all duration-300 text-white ${currentPlayer.color}`;
+            
+            questionText.textContent = gameState.currentQuestion.question;
+            
+            renderOptions();
+        }
+
+        function renderOptions() {
+            optionsContainer.innerHTML = '';
+            const shuffledOptions = [...gameState.currentQuestion.options].sort(() => Math.random() - 0.5);
+
+            shuffledOptions.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.className = 'option-btn w-full bg-gray-700 hover:bg-gray-600 text-white font-semibold py-4 px-4 rounded-xl text-lg shadow-md transition-all duration-200 transform active:scale-95';
+                button.addEventListener('click', () => handleAnswer(option, button));
+                optionsContainer.appendChild(button);
+            });
+        }
+        
+        function updateRealtimeScoreboard() {
+            realtimeScores.innerHTML = '';
+            gameState.players.forEach(player => {
+                const scoreDiv = document.createElement('div');
+                scoreDiv.className = `p-2 rounded-lg ${player.color}`;
+                scoreDiv.innerHTML = `
+                    <div class="font-semibold text-sm">${player.name}</div>
+                    <div class="font-black text-2xl">${player.score}</div>
+                `;
+                realtimeScores.appendChild(scoreDiv);
+            });
+        }
+
+        // ---- LÓGICA DE RESPOSTA ----
+        function handleAnswer(selectedOption, button) {
+            document.querySelectorAll('.option-btn').forEach(btn => btn.disabled = true);
+
+            const isCorrect = selectedOption === gameState.currentQuestion.answer;
+            
+            if (isCorrect) {
+                gameState.players[gameState.currentPlayerIndex].score += 10;
+                playSound('correct');
+                showFeedback(true);
+                button.classList.remove('bg-gray-700', 'hover:bg-gray-600');
+                button.classList.add('bg-green-600');
+            } else {
+                playSound('error');
+                showFeedback(false);
+                button.classList.remove('bg-gray-700', 'hover:bg-gray-600');
+                button.classList.add('bg-red-600');
+                // Revela a resposta correta
+                 document.querySelectorAll('.option-btn').forEach(btn => {
+                    if (btn.textContent === gameState.currentQuestion.answer) {
+                        btn.classList.remove('bg-gray-700', 'hover:bg-gray-600');
+                        btn.classList.add('bg-green-600');
+                    }
+                });
+            }
+            
+            setTimeout(() => {
+                feedbackOverlay.classList.add('hidden');
+                nextTurn();
+            }, 1800);
+        }
+        
+        function showFeedback(isCorrect) {
+            if (isCorrect) {
+                feedbackIcon.innerHTML = `<i data-lucide="check-circle" class="w-24 h-24 text-green-500"></i>`;
+                feedbackText.textContent = "Correto!";
+                feedbackText.className = 'text-4xl font-black text-green-500';
+                feedbackDetails.textContent = `+10 pontos para ${gameState.players[gameState.currentPlayerIndex].name}`;
+            } else {
+                 feedbackIcon.innerHTML = `<i data-lucide="x-circle" class="w-24 h-24 text-red-500"></i>`;
+                feedbackText.textContent = "Errado!";
+                feedbackText.className = 'text-4xl font-black text-red-500';
+                feedbackDetails.textContent = `A resposta correta era: ${gameState.currentQuestion.answer}`;
+            }
+            lucide.createIcons();
+            feedbackOverlay.classList.remove('hidden');
+        }
+
+        function nextTurn() {
+            gameState.currentPlayerIndex++;
+            if (gameState.currentPlayerIndex >= gameState.settings.numPlayers) {
+                // Todos responderam, próxima rodada
+                gameState.currentRound++;
+                nextRound();
+            } else {
+                // Próximo jogador responde a mesma pergunta
+                updateGameUI();
+            }
+        }
+        
+        // ---- FIM DE JOGO ----
+        function endGame() {
+            showScreen('result-screen');
+            renderFinalResults();
+            playSound('winner');
+            createConfetti(100);
+        }
+
+        function renderFinalResults() {
+            const sortedPlayers = [...gameState.players].sort((a, b) => b.score - a.score);
+            const winner = sortedPlayers[0];
+            const isTie = sortedPlayers.length > 1 && sortedPlayers[0].score === sortedPlayers[1].score;
+
+            if (isTie) {
+                winnerAnnouncement.innerHTML = `<h2 class="text-3xl font-bold text-yellow-400">É um empate!</h2>`;
+            } else {
+                winnerAnnouncement.innerHTML = `
+                    <div class="text-yellow-400 mb-2">
+                        <i data-lucide="trophy" class="w-12 h-12 mx-auto"></i>
+                    </div>
+                    <h2 class="text-3xl font-bold">O vencedor é</h2>
+                    <p class="text-4xl font-black ${winner.color} text-white p-2 rounded-lg mt-1">${winner.name}!</p>
+                `;
+            }
+
+            finalScoreboard.innerHTML = '';
+            sortedPlayers.forEach((player, index) => {
+                const playerDiv = document.createElement('div');
+                playerDiv.className = `flex items-center justify-between p-3 rounded-lg text-lg ${index === 0 ? player.color + ' text-white shadow-lg' : 'bg-gray-700'}`;
+                playerDiv.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="font-bold text-xl">${index + 1}º</span>
+                        <span class="font-semibold">${player.name}</span>
+                    </div>
+                    <span class="font-black text-xl">${player.score} pts</span>
+                `;
+                finalScoreboard.appendChild(playerDiv);
+            });
+            lucide.createIcons();
+        }
+        
+        function shareResult() {
+            playSound('click');
+            const sortedPlayers = [...gameState.players].sort((a, b) => b.score - a.score);
+            let shareText = `🏆 Resultado do Quiz de Conhecimentos Gerais 🏆\n\n`;
+            sortedPlayers.forEach((player, index) => {
+                shareText += `${index + 1}º: ${player.name} - ${player.score} pontos\n`;
+            });
+            shareText += "\nJogue você também!";
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Resultado do Quiz',
+                    text: shareText,
+                }).catch(console.error);
+            } else {
+                navigator.clipboard.writeText(shareText).then(() => {
+                    alert('Resultado copiado para a área de transferência!');
+                });
+            }
+        }
+
+        function createConfetti(count) {
+            const container = document.getElementById('app-container');
+            for (let i = 0; i < count; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = `${Math.random() * 100}%`;
+                confetti.style.animationDelay = `${Math.random() * 3}s`;
+                confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                container.appendChild(confetti);
+
+                setTimeout(() => confetti.remove(), 5000);
+            }
+        }
+
+        // ---- INICIAR APLICAÇÃO ----
+        document.addEventListener('DOMContentLoaded', init);
+
+    </script>
+</body>
+</html>
+
