@@ -1012,6 +1012,7 @@
                 shareText = `🏆 Fiz ${player.score} pontos no Quiz de Conhecimentos Gerais! 🏆`;
             }
             shareText += "\nJogue você também!";
+            shareText += "\n👉 https://jogue-quiz.vercel.app";
             
             const copyToClipboard = () => {
                 navigator.clipboard.writeText(shareText).then(() => {
