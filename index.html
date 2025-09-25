@@ -13,9 +13,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-<!-- Favicon (Ícone da Aba) -->
+    
+    <!-- Favicon (Ícone da Aba) -->
     <link rel="icon" type="image/png" href="logoQuiz.png">
-
 
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -85,7 +85,7 @@
                         <i data-lucide="users" class="w-5 h-5 text-indigo-400"></i>
                         Jogadores
                     </label>
-                    <div id="player-count-selector" class="grid grid-cols-5 gap-2 mt-2">
+                    <div id="player-count-selector" class="grid grid-cols-6 gap-2 mt-2">
                         <!-- Botões serão gerados pelo JS -->
                     </div>
                 </div>
@@ -99,8 +99,19 @@
                     <input id="rounds-slider" type="range" min="3" max="20" value="10" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer mt-3">
                 </div>
 
-                <!-- Exibição do Placar -->
+                <!-- Seleção de Categoria -->
                 <div>
+                    <label class="font-bold text-lg text-gray-300 flex items-center gap-2">
+                        <i data-lucide="tag" class="w-5 h-5 text-indigo-400"></i>
+                        Categorias
+                    </label>
+                    <div id="category-selector" class="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
+                         <!-- Botões de categoria serão gerados pelo JS -->
+                    </div>
+                </div>
+
+                <!-- Exibição do Placar -->
+                <div id="score-display-container">
                     <label class="font-bold text-lg text-gray-300 flex items-center gap-2">
                         <i data-lucide="bar-chart-2" class="w-5 h-5 text-indigo-400"></i>
                         Placar
@@ -192,247 +203,322 @@
         // =========== BANCO DE DADOS ==========
         // ===================================
         const questions = [
-  { question: "Em que ano o homem pisou na Lua pela primeira vez?", options: ["1971", "1965", "1969", "1972"], answer: "1969" },
-  { question: "Quem foi o primeiro presidente do Brasil?", options: ["Prudente de Morais", "Dom Pedro I", "Getúlio Vargas", "Deodoro da Fonseca"], answer: "Deodoro da Fonseca" },
-  { question: "Qual civilização antiga construiu as pirâmides de Gizé?", options: ["Romanos", "Gregos", "Maias", "Egípcios"], answer: "Egípcios" },
-  { question: "A Primeira Guerra Mundial começou em que ano?", options: ["1939", "1918", "1922", "1914"], answer: "1914" },
-  { question: "Quem descobriu o Brasil?", options: ["Vasco da Gama", "Pedro Álvares Cabral", "Fernão de Magalhães", "Cristóvão Colombo"], answer: "Pedro Álvares Cabral" },
-// História
-  { question: "Quem foi o líder da Revolução Russa de 1917?", options: ["Lenin", "Marx", "Trotsky", "Stalin"], answer: "Lenin" },
-  { question: "Em que ano Cristóvão Colombo chegou à América?", options: ["1485", "1492", "1500", "1498"], answer: "1492" },
-  { question: "Qual era o nome do navio de Pedro Álvares Cabral que descobriu o Brasil?", options: ["Pedro", "Santa Maria", "São Gabriel", "Santo Antônio"], answer: "Santo Antônio" },
-  { question: "Quem foi o imperador francês derrotado em Waterloo?", options: ["Carlos Magno", "Napoleão III", "Napoleão Bonaparte", "Louis XVI"], answer: "Napoleão Bonaparte" },
-  { question: "Qual guerra aconteceu entre 1939 e 1945?", options: ["Segunda Guerra Mundial", "Primeira Guerra Mundial", "Guerra Fria", "Guerra do Vietnã"], answer: "Segunda Guerra Mundial" },
-  { question: "Em que ano caiu o Muro de Berlim?", options: ["1987", "1990", "1991", "1989"], answer: "1989" },
-  { question: "Quem foi o responsável pela independência dos EUA?", options: ["George Washington", "Thomas Jefferson", "Benjamin Franklin", "Abraham Lincoln"], answer: "George Washington" },
-  { question: "Qual civilização construiu Machu Picchu?", options: ["Astecas", "Egípcios", "Incas", "Maias"], answer: "Incas" },
-  { question: "Quem era o presidente dos EUA durante a Guerra Civil?", options: ["Abraham Lincoln", "George Washington", "Jefferson Davis", "Theodore Roosevelt"], answer: "Abraham Lincoln" },
-  { question: "Em que ano começou a Primeira Guerra Mundial?", options: ["1922", "1918", "1914", "1939"], answer: "1914" },
-  { question: "Quem foi o faraó do Egito responsável pela construção da Grande Pirâmide?", options: ["Quéops", "Tutancâmon", "Ramsés II", "Akhenaton"], answer: "Quéops" },
-  { question: "Qual país foi o primeiro a dar direito de voto às mulheres?", options: ["França", "Estados Unidos", "Reino Unido", "Nova Zelândia"], answer: "Nova Zelândia" },
-  { question: "Em que ano aconteceu a Revolução Industrial?", options: ["Século XVII", "Século XVIII", "Século XIX", "Século XVI"], answer: "Século XVIII" },
-  { question: "Quem assinou a Lei Áurea no Brasil?", options: ["Dom Pedro II", "Deodoro da Fonseca", "Getúlio Vargas", "Princesa Isabel"], answer: "Princesa Isabel" },
-  { question: "Qual país lançou a primeira bomba atômica na Segunda Guerra Mundial?", options: ["Reino Unido", "Estados Unidos", "Alemanha", "Japão"], answer: "Estados Unidos" },
-  { question: "Quem foi o primeiro imperador do Brasil?", options: ["Napoleão Bonaparte", "Dom Pedro II", "Dom Pedro I", "João VI"], answer: "Dom Pedro I" },
-  { question: "Qual tratado dividiu o Novo Mundo entre Espanha e Portugal?", options: ["Paz de Westfália", "Tratado de Tordesilhas", "Tratado de Versalhes", "Tratado de Paris"], answer: "Tratado de Tordesilhas" },
-  { question: "Em que ano Napoleão Bonaparte se tornou imperador?", options: ["1812", "1799", "1804", "1800"], answer: "1804" },
-  { question: "Qual foi o primeiro país a abolir a escravidão?", options: ["Reino Unido", "França", "Estados Unidos", "Haiti"], answer: "Haiti" },
-  { question: "Quem foi o líder da independência da Índia?", options: ["Subhas Chandra Bose", "Jawaharlal Nehru", "Mahatma Gandhi", "Indira Gandhi"], answer: "Mahatma Gandhi" },
-  { question: "Qual foi o principal país aliado da Alemanha na Segunda Guerra Mundial?", options: ["França", "Japão", "Itália", "União Soviética"], answer: "Itália" },
-  { question: "Quem descobriu a penicilina?", options: ["Louis Pasteur", "Robert Koch", "Alexander Fleming", "Marie Curie"], answer: "Alexander Fleming" },
-  { question: "Em que ano ocorreu a Revolução Francesa?", options: ["1792", "1776", "1789", "1804"], answer: "1789" },
-  { question: "Qual civilização construiu os zigurates?", options: ["Sumérios", "Egípcios", "Maias", "Astecas"], answer: "Sumérios" },
-  { question: "Quem foi o líder da União Soviética durante a Segunda Guerra Mundial?", options: ["Brejnev", "Lenin", "Trotsky", "Joseph Stalin"], answer: "Joseph Stalin" },
-  { question: "Em que ano terminou a Guerra do Vietnã?", options: ["1972", "1975", "1969", "1973"], answer: "1975" },
-  { question: "Qual civilização construiu o Coliseu?", options: ["Romanos", "Egípcios", "Gregos", "Cartagineses"], answer: "Romanos" },
-  { question: "Quem foi o primeiro-ministro britânico durante a Segunda Guerra Mundial?", options: ["Margaret Thatcher", "Winston Churchill", "Tony Blair", "Neville Chamberlain"], answer: "Winston Churchill" },
-  { question: "Qual país invadiu a Polônia em 1939?", options: ["Japão", "Itália", "União Soviética", "Alemanha"], answer: "Alemanha" },
-  { question: "Em que ano a independência do Brasil foi proclamada?", options: ["1822", "1889", "1815", "1808"], answer: "1822" },
-  { question: "Quem foi o líder do movimento sul-africano contra o apartheid?", options: ["Thabo Mbeki", "Nelson Mandela", "F.W. de Klerk", "Desmond Tutu"], answer: "Nelson Mandela" },
-  { question: "Qual imperador romano foi assassinado em 44 a.C.?", options: ["Nero", "Júlio César", "Augusto", "Calígula"], answer: "Júlio César" },
-  { question: "Em que ano ocorreu a queda do Império Romano do Ocidente?", options: ["500", "476", "410", "395"], answer: "476" },
-  { question: "Quem foi o último czar da Rússia?", options: ["o Grande", "Nicolau II", "Ivan IV", "Alexandre III", "Pedro"], answer: "Nicolau II" },
-  { question: "Qual país colonizou a Índia antes da independência?", options: ["França", "Portugal", "Holanda", "Reino Unido"], answer: "Reino Unido" },
-  { question: "Quem foi o primeiro presidente dos Estados Unidos?", options: ["Abraham Lincoln", "John Adams", "Thomas Jefferson", "George Washington"], answer: "George Washington" },
-  { question: "Em que ano ocorreu a Revolução Chinesa que levou Mao Tse-Tung ao poder?", options: ["1937", "1950", "1949", "1945"], answer: "1949" },
-  { question: "Qual civilização construiu a cidade de Teotihuacán?", options: ["Maias", "Astecas", "Olmecas", "Incas"], answer: "Maias" },
-  { question: "Quem foi o líder do movimento pelos direitos civis nos EUA?", options: ["Frederick Douglass", "Rosa Parks", "Malcolm X", "Martin Luther King Jr."], answer: "Martin Luther King Jr." },
-  { question: "Em que ano terminou a Guerra Franco-Prussiana?", options: ["1866", "1871", "1875", "1880"], answer: "1871" },
-  { question: "Quem foi o explorador que circunavegou o globo primeiro?", options: ["Vasco da Gama", "Cristóvão Colombo", "Ferdinand Magellan", "James Cook"], answer: "Ferdinand Magellan" },
-  { question: "Qual país foi unificado por Otto von Bismarck?", options: ["Alemanha", "Itália", "Espanha", "França"], answer: "Alemanha" },
-  { question: "Quem inventou a imprensa?", options: ["Leonardo da Vinci", "Galileu Galilei", "Johannes Gutenberg", "Thomas Edison"], answer: "Johannes Gutenberg" },
-  { question: "Qual foi a principal cidade do Império Asteca?", options: ["Cuzco", "Chichén Itzá", "Teotihuacán", "Tenochtitlán"], answer: "Tenochtitlán" },
-  { question: "Em que ano começou a Guerra de 100 Anos?", options: ["1350", "1320", "1337", "1346"], answer: "1337" },
-  { question: "Quem foi o rei da França durante a Revolução Francesa?", options: ["Napoleão Bonaparte", "Henrique IV", "Carlos X", "Luis XVI"], answer: "Luis XVI" },
-  { question: "Qual foi o tratado que encerrou a Guerra de 30 anos?", options: ["Tratado de Versalhes", "Paz de Westfália", "Tratado de Tordesilhas", "Tratado de Paris"], answer: "Paz de Westfália" },
-  { question: "Quem liderou o movimento de independência da Argentina?", options: ["Simón Bolívar", "Bernardo O'Higgins", "Miguel Hidalgo", "José de San Martín"], answer: "José de San Martín" },
-  { question: "Qual foi a primeira civilização a usar escrita cuneiforme?", options: ["Sumérios", "Maias", "Fenícios", "Egípcios"], answer: "Sumérios" },
-  { question: "Quem foi o presidente do Brasil durante a ditadura militar iniciada em 1964?", options: ["Jânio Quadros", "Getúlio Vargas", "Castello Branco", "Juscelino Kubitschek"], answer: "Castello Branco" },
-  { question: "Em que ano a União Europeia foi oficialmente criada?", options: ["1989", "1990", "1993", "2000"], answer: "1993" },
-  { question: "Quem foi o líder da Revolução Cubana?", options: ["Che Guevara", "Fidel Castro", "Camilo Cienfuegos", "Raúl Castro"], answer: "Fidel Castro" },
-// Ciência
-  { question: "Qual é o maior planeta do nosso sistema solar?", options: ["Saturno", "Marte", "Terra", "Júpiter"], answer: "Júpiter" },
-  { question: "Qual é o símbolo químico para o ouro?", options: ["Au", "Fe", "Ag", "O"], answer: "Au" },
-  { question: "Quantos ossos tem o corpo humano adulto?", options: ["212", "198", "220", "206"], answer: "206" },
-  { question: "Qual cientista desenvolveu a teoria da relatividade?", options: ["Albert Einstein", "Nikola Tesla", "Galileu Galilei", "Isaac Newton"], answer: "Albert Einstein" },
-  { question: "Qual gás as plantas absorvem para a fotossíntese?", options: ["Nitrogênio", "Oxigênio", "Hidrogênio", "Dióxido de Carbono"], answer: "Dióxido de Carbono" },
-  { question: "Qual é o maior órgão do corpo humano?", options: ["Cérebro", "Coração", "Fígado", "Pele"], answer: "Pele" },
-  { question: "Qual é o elemento químico representado pelo símbolo O?", options: ["Óxido", "Oxigênio", "Ouro", "Ósmio"], answer: "Oxigênio" },
-  { question: "O que é fotossíntese?", options: ["Processo de respiração das plantas", "Processo de produção de alimentos das plantas", "Processo de reprodução das plantas", "Processo de defesa das plantas"], answer: "Processo de produção de alimentos das plantas" },
-  { question: "Qual é o planeta mais próximo do Sol?", options: ["Marte", "Mercúrio", "Vênus", "Terra"], answer: "Mercúrio" },
-  { question: "Qual é a principal fonte de energia para os seres vivos?", options: ["Sol", "Alimentos", "Ar", "Água"], answer: "Sol" },
-  { question: "O que é DNA?", options: ["Proteína", "Ácido ribonucleico", "Ácido nucléico", "Ácido desoxirribonucleico"], answer: "Ácido desoxirribonucleico" },
-  { question: "Qual é o principal gás responsável pelo efeito estufa?", options: ["Nitrogênio", "Oxigênio", "Metano", "Dióxido de carbono"], answer: "Dióxido de carbono" },
-  { question: "Em qual parte da célula ocorre a respiração celular?", options: ["Membrana plasmática", "Núcleo", "Mitocôndria", "Citoplasma"], answer: "Mitocôndria" },
-  { question: "Qual é o processo que transforma a água líquida em vapor?", options: ["Solidificação", "Evaporação", "Congelação", "Condensação"], answer: "Evaporação" },
-  { question: "Quem propôs a teoria da relatividade?", options: ["Nikola Tesla", "Galileu Galilei", "Albert Einstein", "Isaac Newton"], answer: "Albert Einstein" },
-  { question: "Qual é a função dos ribossomos nas células?", options: ["Produzir proteínas", "Controlar a divisão celular", "Armazenar energia", "Defender a célula"], answer: "Produzir proteínas" },
-  { question: "O que é um ecossistema?", options: ["Uma área de terra", "Conjunto de organismos vivos e seu ambiente", "Uma espécie de planta", "Uma cadeia alimentar"], answer: "Conjunto de organismos vivos e seu ambiente" },
-  { question: "Qual é a unidade básica de um ser vivo?", options: ["Célula", "Sistema", "Órgão", "Tecido"], answer: "Célula" },
-  { question: "Qual a principal função do sistema circulatório?", options: ["Produção de hormônios", "Transporte de oxigênio e dióxido de carbono", "Transporte de nutrientes", "Respiração"], answer: "Transporte de oxigênio e dióxido de carbono" },
-  { question: "Qual é o maior animal terrestre?", options: ["Baleia", "Girafa", "Leão", "Elefante"], answer: "Elefante" },
-  { question: "Em que parte do corpo humano é produzido o sangue?", options: ["Coração", "Fígado", "Rim", "Medula óssea"], answer: "Medula óssea" },
-  { question: "O que é a tectônica de placas?", options: ["Teoria sobre a movimentação das massas de ar", "Teoria sobre o movimento dos oceanos", "Teoria sobre os movimentos das placas continentais", "Teoria sobre a formação do solo"], answer: "Teoria sobre os movimentos das placas continentais" },
-  { question: "Quem descobriu a penicilina?", options: ["Louis Pasteur", "Alexander Fleming", "Marie Curie", "Albert Einstein"], answer: "Alexander Fleming" },
-  { question: "Qual é o nome do processo que as plantas utilizam para produzir seu alimento?", options: ["Fermentação", "Digestão", "Fotossíntese", "Respiração celular"], answer: "Fotossíntese" },
-  { question: "Qual é o estado físico da água a 0°C?", options: ["Sólido", "Plasma", "Líquido", "Gasoso"], answer: "Sólido" },
-  { question: "O que é um átomo?", options: ["Uma molécula", "Um tipo de energia", "A menor partícula de um elemento", "Uma célula viva"], answer: "A menor partícula de um elemento" },
-  { question: "Em que estado a água se encontra a 100°C?", options: ["Plasma", "Sólido", "Gasoso", "Líquido"], answer: "Gasoso" },
-  { question: "Qual é a principal função do sistema nervoso?", options: ["Coordenar os movimentos", "Produzir hormônios", "Regenerar células", "Transportar oxigênio"], answer: "Coordenar os movimentos" },
-  { question: "Qual é o principal combustível usado nas usinas nucleares?", options: ["Gás natural", "Água", "Carvão", "Uranium"], answer: "Uranium" },
-  { question: "Qual a camada mais externa da Terra?", options: ["Litosfera", "Manto", "Troposfera", "Núcleo"], answer: "Litosfera" },
-  { question: "O que é a biodiversidade?", options: ["Variedade de organismos em um ecossistema", "Variedade de organismos microscópicos", "Número de espécies de plantas", "Diversidade de solos"], answer: "Variedade de organismos em um ecossistema" },
-  { question: "Quem foi o inventor da lâmpada incandescente?", options: ["Nikola Tesla", "Thomas Edison", "Galileu Galilei", "Albert Einstein"], answer: "Thomas Edison" },
-  { question: "Qual é o nome da camada de ozônio?", options: ["Exosfera", "Estratosfera", "Troposfera", "Termosfera"], answer: "Estratosfera" },
-  { question: "O que é um gene?", options: ["Uma molécula de oxigênio", "Uma sequência de DNA que define características", "Uma célula", "Uma proteína"], answer: "Uma sequência de DNA que define características" },
-  { question: "Qual é a diferença entre um vírus e uma bactéria?", options: ["Vírus são menores e não têm células", "Bactérias não têm DNA", "Bactérias são maiores e não têm células", "Vírus não causam doenças"], answer: "Vírus são menores e não têm células" },
-  { question: "Qual é a função dos leucócitos no sangue?", options: ["Combater infecções", "Transportar nutrientes", "Transportar oxigênio", "Coagular o sangue"], answer: "Combater infecções" },
-  { question: "Qual é a principal fonte de oxigênio para os seres vivos?", options: ["Oceanos", "Solo", "Plantas", "Animais"], answer: "Plantas" },
-  { question: "O que é a fototropismo nas plantas?", options: ["Movimento para longe da água", "Crescimento em direção ao solo", "Movimento das plantas em direção à luz", "Movimento das raízes para baixo"], answer: "Movimento das plantas em direção à luz" },
-  { question: "O que são os átomos de carbono em uma molécula de glicose?", options: ["Átomos de hidrogênio", "Átomos de oxigênio", "Átomos de nitrogênio", "Átomos de carbono"], answer: "Átomos de carbono" },
-  { question: "Qual é o nome do processo de transformação de uma substância de sólido para gasoso?", options: ["Fusão", "Sublimação", "Condensação", "Evaporação"], answer: "Sublimação" },
-  { question: "Qual é o planeta conhecido como "Planeta Vermelho"?", options: ["Marte", "Vênus", "Saturno", "Júpiter"], answer: "Marte" },
-  { question: "Qual o nome do nosso satélite natural?", options: ["Lua", "Júpiter", "Estrela Polar", "Sol"], answer: "Lua" },
-  { question: "Qual é a função das mitocôndrias nas células?", options: ["Controlar a divisão celular", "Produzir energia", "Armazenar energia", "Produzir proteínas"], answer: "Produzir energia" },
-  { question: "O que é a força de gravidade?", options: ["Força que repele objetos", "Força que causa a movimentação dos planetas", "Força que atrai a Lua para a Terra", "Força que atrai objetos para o centro da Terra"], answer: "Força que atrai objetos para o centro da Terra" },
-  { question: "Qual é o elemento mais abundante na crosta terrestre?", options: ["Oxigênio", "Alumínio", "Silício", "Ferro"], answer: "Oxigênio" },
-  { question: "Qual o nome do processo que converte a luz solar em energia pelas plantas?", options: ["Fermentação", "Respiração celular", "Fotossíntese", "Digestão"], answer: "Fotossíntese" },
-  { question: "Em qual parte do corpo humano estão localizados os neurônios?", options: ["Pâncreas", "Estômago", "Cérebro", "Coração"], answer: "Cérebro" },
-  { question: "Qual é o maior planeta do sistema solar?", options: ["Terra", "Júpiter", "Saturno", "Urano"], answer: "Júpiter" },
-  { question: "O que é uma cadeia alimentar?", options: ["Formação de rochas", "Sequência de organismos que se alimentam uns dos outros", "Ciclo da água", "Processo de fotossíntese"], answer: "Sequência de organismos que se alimentam uns dos outros" },
-  { question: "Qual é o nome da teoria que descreve a origem do universo?", options: ["Teoria da Evolução", "Teoria da Gravidade", "Teoria do Big Bang", "Teoria da Relatividade"], answer: "Teoria do Big Bang" },
-  { question: "O que é a evaporação?", options: ["Mudança de estado da água de gasoso para líquido", "Mudança de estado da água de líquido para sólido", "Mudança de estado da água de líquido para gás", "Mudança de estado da água de sólido para líquido"], answer: "Mudança de estado da água de líquido para gás" },
-  { question: "Qual é a parte do cérebro responsável pelo controle dos movimentos voluntários?", options: ["Hipotálamo", "Cerebelo", "Medula espinhal", "Cérebro"], answer: "Cerebelo" },
-  { question: "Qual é a unidade básica de medida para a intensidade de corrente elétrica?", options: ["Watt", "Volt", "Ohm", "Amperes"], answer: "Amperes" },
-// Geografia
-  { question: "Qual é o maior oceano do mundo?", options: ["Ártico", "Atlântico", "Índico", "Pacífico"], answer: "Pacífico" },
-  { question: "Em que continente fica o Egito?", options: ["África", "Europa", "Ásia", "Oceania"], answer: "África" },
-  { question: "Qual é a capital da Austrália?", options: ["Camberra", "Melbourne", "Sydney", "Perth"], answer: "Camberra" },
-  { question: "Qual é o rio mais longo do mundo?", options: ["Nilo", "Mississipi", "Amazonas", "Yangtzé"], answer: "Amazonas" },
-  { question: "Qual país é conhecido como a 'Terra do Sol Nascente'?", options: ["Coreia do Sul", "China", "Tailândia", "Japão"], answer: "Japão" },
-  { question: "Onde fica o Monte Everest?", options: ["Índia", "Paquistão", "Nepal", "China"], answer: "Nepal" },
-  { question: "Onde está localizada a Floresta Amazônica?", options: ["Equador", "Brasil", "Peru", "Colômbia"], answer: "Brasil" },
-  { question: "Onde se encontra o Deserto do Saara?", options: ["América do Sul", "Ásia", "América do Norte", "África"], answer: "África" },
-  { question: "Onde fica o maior lago do mundo em volume de água?", options: ["Brasil", "Canadá", "Rússia", "Cazaquistão"], answer: "Rússia" },
-  { question: "Onde está localizado o Rio Nilo?", options: ["Egito", "Níger", "Marrocos", "África do Sul"], answer: "Egito" },
-  { question: "Onde se encontra a Cordilheira dos Andes?", options: ["América do Norte", "América do Sul", "Ásia", "África"], answer: "América do Sul" },
-  { question: "Onde está o deserto de Atacama?", options: ["Chile", "Bolívia", "Peru", "Argentina"], answer: "Chile" },
-  { question: "Onde está o Monte Kilimanjaro?", options: ["Quênia", "Uganda", "Etiópia", "Tanzânia"], answer: "Tanzânia" },
-  { question: "Onde se localiza o maior rio do mundo em extensão?", options: ["Nilo", "Yangtze", "Mississippi", "Amazônia"], answer: "Amazônia" },
-  { question: "Onde fica a cidade de Petra?", options: ["Jordânia", "Egito", "Irã", "Síria"], answer: "Jordânia" },
-  { question: "Onde está o maior deserto do mundo?", options: ["Saara", "Kalahari", "Antártica", "Gobi"], answer: "Antártica" },
-  { question: "Onde se localiza a Grande Barreira de Coral?", options: ["Filipinas", "Indonésia", "Austrália", "Malásia"], answer: "Austrália" },
-  { question: "Onde fica a cidade de Machu Picchu?", options: ["Peru", "Bolívia", "Chile", "Equador"], answer: "Peru" },
-  { question: "Onde está o Parque Nacional de Yellowstone?", options: ["México", "Colômbia", "Estados Unidos", "Canadá"], answer: "Estados Unidos" },
-  { question: "Onde se localiza o Canal do Panamá?", options: ["Honduras", "Colômbia", "Panamá", "Costa Rica"], answer: "Panamá" },
-  { question: "Onde se encontra o Lago Baikal?", options: ["Canadá", "Estados Unidos", "Rússia", "China"], answer: "Rússia" },
-  { question: "Onde está a cidade de Veneza?", options: ["Grécia", "Espanha", "Itália", "França"], answer: "Itália" },
-  { question: "Onde se localiza a ilha de Madagascar?", options: ["África", "Oceania", "América", "Ásia"], answer: "África" },
-  { question: "Onde está localizada a cidade de Sydney?", options: ["Austrália", "Papua-Nova Guiné", "Nova Zelândia", "Ilhas Fiji"], answer: "Austrália" },
-  { question: "Onde está o maior arquipélago do mundo?", options: ["Malásia", "Filipinas", "Japão", "Indonésia"], answer: "Indonésia" },
-  { question: "Onde fica o Monte Fuji?", options: ["Coreia do Sul", "Taiwan", "China", "Japão"], answer: "Japão" },
-  { question: "Onde está localizado o Taj Mahal?", options: ["Nepal", "Sri Lanka", "Paquistão", "Índia"], answer: "Índia" },
-  { question: "Onde se encontra o Lago Titicaca?", options: ["Equador", "Chile", "Peru", "Bolívia"], answer: "Peru" },
-  { question: "Onde se localiza o Parque Nacional de Banff?", options: ["Estados Unidos", "Canadá", "Argentina", "México"], answer: "Canadá" },
-  { question: "Onde fica o país de Luxemburgo?", options: ["Oceania", "África", "Europa", "América do Norte"], answer: "Europa" },
-  { question: "Onde fica a Ilha de Páscoa?", options: ["Fiji", "Indonésia", "Chile", "Polinésia Francesa"], answer: "Chile" },
-  { question: "Onde se localiza o Delta do Okavango?", options: ["Namíbia", "África do Sul", "Zâmbia", "Botsuana"], answer: "Botsuana" },
-  { question: "Onde fica o Monte McKinley?", options: ["Canadá", "Chile", "Argentina", "Alasca"], answer: "Alasca" },
-  { question: "Onde fica a cidade de Nova York?", options: ["México", "Canadá", "Estados Unidos", "Cuba"], answer: "Estados Unidos" },
-  { question: "Onde está localizada a cidade de Cairo?", options: ["Marrocos", "Egito", "Tunísia", "Líbano"], answer: "Egito" },
-  { question: "Onde fica o Rio Amazonas?", options: ["Brasil", "Colômbia", "Venezuela", "Peru"], answer: "Brasil" },
-  { question: "Onde está o Parque Nacional de Kruger?", options: ["Namíbia", "Botsuana", "África do Sul", "Quênia"], answer: "África do Sul" },
-  { question: "Onde se encontra a cidade de Istambul?", options: ["Turquia", "Sérvia", "Egito", "Grécia"], answer: "Turquia" },
-  { question: "Onde fica o Monte Everest?", options: ["Índia", "China", "Nepal", "Paquistão"], answer: "Nepal" },
-  { question: "Onde se localiza o Parque Nacional Torres del Paine?", options: ["Chile", "Peru", "Brasil", "Argentina"], answer: "Chile" },
-  { question: "Onde fica a cidade de Buenos Aires?", options: ["Chile", "Uruguai", "Brasil", "Argentina"], answer: "Argentina" },
-  { question: "Onde está o Cabo da Boa Esperança?", options: ["Namíbia", "África do Sul", "Mozambique", "Angola"], answer: "África do Sul" },
-  { question: "Onde fica a cidade de Roma?", options: ["Itália", "França", "Portugal", "Espanha"], answer: "Itália" },
-  { question: "Onde está localizada a Ilha de Fernando de Noronha?", options: ["Brasil", "Uruguai", "Argentina", "Chile"], answer: "Brasil" },
-  { question: "Onde fica o Parque Nacional da Serra da Canastra?", options: ["Equador", "Colômbia", "Brasil", "Peru"], answer: "Brasil" },
-  { question: "Onde está o país de Nepal?", options: ["Ásia", "América do Sul", "África", "Oceania"], answer: "Ásia" },
-  { question: "Onde fica o deserto de Kalahari?", options: ["África", "Ásia", "América do Norte", "América do Sul"], answer: "África" },
-  { question: "Onde se localiza a cidade de São Petersburgo?", options: ["Ucrânia", "Rússia", "Finlândia", "Polônia"], answer: "Rússia" },
-  { question: "Onde está o ponto mais baixo da Terra?", options: ["Deserto de Atacama", "Mar Morto", "Oceano Pacífico", "Vale da Morte"], answer: "Mar Morto" },
-  { question: "Onde se localiza o Rio Danúbio?", options: ["Europa", "Ásia", "África", "América do Sul"], answer: "Europa" },
-  { question: "Onde se encontra o Arquipélago de Galápagos?", options: ["Brasil", "Peru", "Chile", "Equador"], answer: "Equador" },
-  { question: "Onde fica o Pico da Neblina?", options: ["Peru", "Venezuela", "Colômbia", "Brasil"], answer: "Brasil" },
-  { question: "Onde se localiza a cidade de Toronto?", options: ["México", "Estados Unidos", "Jamaica", "Canadá"], answer: "Canadá" },
-  { question: "Onde fica a cidade de Cidade do Cabo?", options: ["Namíbia", "África do Sul", "Botsuana", "Zimbábue"], answer: "África do Sul" },
-  { question: "Onde se encontra o Rio Ganges?", options: ["Índia", "Paquistão", "Nepal", "Bangladesh"], answer: "Índia" },
-  { question: "Onde se localiza a cidade de Santiago?", options: ["Uruguai", "Argentina", "Chile", "Peru"], answer: "Chile" },
-  { question: "Onde está a cidade de Dubai?", options: ["Irã", "Emirados Árabes Unidos", "Arábia Saudita", "Kuwait"], answer: "Emirados Árabes Unidos" },
-// Esportes
-  { question: "Quantos jogadores um time de futebol tem em campo?", options: ["12", "11", "9", "10"], answer: "11" },
-  { question: "Qual país sediou a Copa do Mundo de 2014?", options: ["África do Sul", "Alemanha", "Rússia", "Brasil"], answer: "Brasil" },
-  { question: "Qual atleta é conhecido como 'O Rei do Futebol'?", options: ["Messi", "Cristiano Ronaldo", "Pelé", "Maradona"], answer: "Pelé" },
-  { question: "Em que esporte Michael Jordan se destacou?", options: ["Beisebol", "Basquete", "Tênis", "Futebol Americano"], answer: "Basquete" },
-  { question: "Qual é a corrida de ciclismo mais famosa do mundo?", options: ["Vuelta a España", "Tour de France", "Paris-Roubaix", "Giro d'Italia"], answer: "Tour de France" },
-  { question: "Quem venceu a Copa do Mundo de Futebol em 2018?", options: ["Croácia", "Brasil", "França", "Alemanha"], answer: "França" },
-  { question: "Quantos jogadores compõem um time de vôlei em quadra?", options: ["4", "7", "6", "5"], answer: "6" },
-  { question: "Em que país foram realizados os Jogos Olímpicos de 2016?", options: ["China", "Rússia", "Brasil", "Japão"], answer: "Brasil" },
-  { question: "Quem é considerado o maior nadador olímpico da história?", options: ["Ian Thorpe", "César Cielo", "Mark Spitz", "Michael Phelps"], answer: "Michael Phelps" },
-  { question: "Qual país tem mais títulos da Copa do Mundo de Futebol?", options: ["Brasil", "Argentina", "Alemanha", "Itália"], answer: "Brasil" },
-  { question: "Quem é o maior artilheiro da história da Seleção Brasileira?", options: ["Neymar", "Ronaldo", "Pelé", "Romário"], answer: "Neymar" },
-  { question: "Qual é o esporte principal praticado em Wimbledon?", options: ["Golfe", "Futebol", "Tênis", "Críquete"], answer: "Tênis" },
-  { question: "Quantos minutos dura uma partida oficial de futebol?", options: ["45", "60", "90", "120"], answer: "90" },
-  { question: "Quem é conhecido como 'Bolt das pistas'?", options: ["Carl Lewis", "Usain Bolt", "Tyson Gay", "Asafa Powell"], answer: "Usain Bolt" },
-  { question: "Quantos anéis possui o símbolo das Olimpíadas?", options: ["5", "7", "4", "6"], answer: "5" },
-  { question: "Qual atleta ganhou 7 títulos de Fórmula 1?", options: ["Lewis Hamilton", "Sebastian Vettel", "Ayrton Senna", "Michael Schumacher"], answer: "Michael Schumacher" },
-  { question: "Qual esporte utiliza uma prancha e ondas?", options: ["Windsurf", "Canoagem", "Surfe", "Remo"], answer: "Surfe" },
-  { question: "Quem é o maior campeão da história da NBA?", options: ["Los Angeles Lakers", "Golden State Warriors", "Chicago Bulls", "Boston Celtics"], answer: "Boston Celtics" },
-  { question: "Em que esporte se destaca Simone Biles?", options: ["Ginástica Artística", "Natação", "Patinação", "Atletismo"], answer: "Ginástica Artística" },
-  { question: "Qual é o país de origem do judô?", options: ["Coreia do Sul", "Japão", "Tailândia", "China"], answer: "Japão" },
-  { question: "Quantas voltas tem uma maratona olímpica?", options: ["10", "42", "5", "Nenhuma {prova única}"], answer: "Nenhuma {prova única}" },
-  { question: "Quem venceu a Copa do Mundo de Futebol de 2002?", options: ["França", "Alemanha", "Brasil", "Itália"], answer: "Brasil" },
-  { question: "Qual é o principal campeonato de futebol da Europa?", options: ["La Liga", "Premier League", "Champions League", "Eurocopa"], answer: "Champions League" },
-  { question: "Quem foi Ayrton Senna?", options: ["Tenista", "Jogador de futebol", "Nadador", "Piloto de Fórmula 1"], answer: "Piloto de Fórmula 1" },
-  { question: "Qual esporte é conhecido como 'esporte bretão'?", options: ["Críquete", "Rúgbi", "Futebol", "Tênis"], answer: "Futebol" },
-  { question: "Em que país nasceu Lionel Messi?", options: ["Argentina", "Uruguai", "Espanha", "Brasil"], answer: "Argentina" },
-  { question: "Qual o nome da competição entre seleções da América do Sul?", options: ["Libertadores", "Eurocopa", "Copa América", "Copa Ouro"], answer: "Copa América" },
-  { question: "Qual foi o país sede da Copa do Mundo de 2014?", options: ["Alemanha", "Rússia", "África do Sul", "Brasil"], answer: "Brasil" },
-  { question: "Em que ano o Brasil sediou a sua primeira Copa do Mundo?", options: ["1962", "1970", "1950", "2014"], answer: "1950" },
-  { question: "Qual o nome do famoso estádio do Rio de Janeiro?", options: ["Beira-Rio", "Mineirão", "Maracanã", "Morumbi"], answer: "Maracanã" },
-  { question: "Qual país é referência no críquete?", options: ["Espanha", "Índia", "Alemanha", "Brasil"], answer: "Índia" },
-  { question: "Quem ganhou o título da Fórmula 1 em 2021?", options: ["Sebastian Vettel", "Lewis Hamilton", "Valtteri Bottas", "Max Verstappen"], answer: "Max Verstappen" },
-  { question: "Quantas medalhas de ouro o Brasil conquistou em Tóquio 2020?", options: ["7", "9", "5", "8"], answer: "7" },
-  { question: "Qual o nome da principal competição de clubes da América do Sul?", options: ["Sul-Americana", "Libertadores", "Brasileirão", "Recopa"], answer: "Libertadores" },
-  { question: "Em que país nasceu Novak Djokovic?", options: ["Sérvia", "Suíça", "Espanha", "Rússia"], answer: "Sérvia" },
-  { question: "Qual é o nome do esporte com tacos e buracos?", options: ["Golfe", "Polo", "Beisebol", "Croqué"], answer: "Golfe" },
-  { question: "Qual é o país sede dos Jogos Olímpicos de 2024?", options: ["China", "França", "EUA", "Japão"], answer: "França" },
-  { question: "Em que esporte é usada uma raquete e volante?", options: ["Tênis de mesa", "Squash", "Badminton", "Tênis"], answer: "Badminton" },
-  { question: "Qual é o nome da liga de futebol dos EUA?", options: ["NFL", "MLS", "NBA", "MLB"], answer: "MLS" },
-  { question: "Qual é o nome da liga de beisebol americana?", options: ["NHL", "NBA", "NFL", "MLB"], answer: "MLB" },
-  { question: "Qual é o time com mais títulos da Libertadores?", options: ["Boca Juniors", "Independiente", "São Paulo", "River Plate"], answer: "Independiente" },
-  { question: "Quem foi o craque brasileiro apelidado de 'Fenômeno'?", options: ["Zico", "Ronaldo", "Pelé", "Ronaldinho"], answer: "Ronaldo" },
-  { question: "Quem é o atual recordista dos 100 metros rasos?", options: ["Usain Bolt", "Asafa Powell", "Carl Lewis", "Tyson Gay"], answer: "Usain Bolt" },
-  { question: "Qual país sediou os Jogos Olímpicos de 2008?", options: ["China", "Grécia", "Inglaterra", "Alemanha"], answer: "China" },
-  { question: "Qual é o esporte de Conor McGregor?", options: ["MMA", "Judô", "Caratê", "Boxe"], answer: "MMA" },
-  { question: "Quem é o maior vencedor do Tour de France?", options: ["Eddy Merckx", "Bernard Hinault", "Miguel Indurain", "Lance Armstrong*"], answer: "Eddy Merckx" },
-  { question: "Qual é o nome do campeonato brasileiro de futebol?", options: ["Brasileirão", "Copa do Brasil", "Série B", "Paulistão"], answer: "Brasileirão" },
-  { question: "Qual o nome da ginasta brasileira campeã mundial?", options: ["Rebeca Andrade", "Daiane dos Santos", "Daniele Hypólito", "Jade Barbosa"], answer: "Rebeca Andrade" },
-  { question: "Em que esporte Guga Kuerten se destacou?", options: ["Basquete", "Vôlei", "Tênis", "Futebol"], answer: "Tênis" },
-  { question: "Qual país venceu a Copa do Mundo Feminina de 2019?", options: ["EUA", "Brasil", "Holanda", "Alemanha"], answer: "EUA" },
-  { question: "Quem é conhecido como 'O Rei do Futebol'?", options: ["Maradona", "Pelé", "Ronaldo", "Zidane"], answer: "Pelé" },
-  { question: "Qual esporte é praticado na NBA?", options: ["Beisebol", "Hóquei", "Futebol", "Basquete"], answer: "Basquete" },
-  { question: "Qual é a principal competição de clubes da Europa?", options: ["Europa League", "Conference League", "Champions League", "Premier League"], answer: "Champions League" },
-  { question: "Quem venceu a Copa do Mundo de 1994?", options: ["Itália", "Alemanha", "Argentina", "Brasil"], answer: "Brasil" },
-  { question: "Quantas Copas do Mundo o Brasil já venceu?", options: ["5", "4", "6", "3"], answer: "5" },
-  { question: "Em qual cidade estão localizadas as 24 Horas de Le Mans?", options: ["Paris", "Nice", "Le Mans", "Mônaco"], answer: "Le Mans" },
+            // História
+            { question: "Em que ano o homem pisou na Lua pela primeira vez?", options: ["1971", "1965", "1969", "1972"], answer: "1969", category: "História" },
+            { question: "Quem foi o primeiro presidente do Brasil?", options: ["Prudente de Morais", "Dom Pedro I", "Getúlio Vargas", "Deodoro da Fonseca"], answer: "Deodoro da Fonseca", category: "História" },
+            { question: "Qual civilização antiga construiu as pirâmides de Gizé?", options: ["Romanos", "Gregos", "Maias", "Egípcios"], answer: "Egípcios", category: "História" },
+            { question: "A Primeira Guerra Mundial começou em que ano?", options: ["1939", "1918", "1922", "1914"], answer: "1914", category: "História" },
+            { question: "Quem descobriu o Brasil?", options: ["Vasco da Gama", "Pedro Álvares Cabral", "Fernão de Magalhães", "Cristóvão Colombo"], answer: "Pedro Álvares Cabral", category: "História" },
+            { question: "Quem foi o líder da Revolução Russa de 1917?", options: ["Lenin", "Marx", "Trotsky", "Stalin"], answer: "Lenin", category: "História" },
+            { question: "Em que ano Cristóvão Colombo chegou à América?", options: ["1485", "1492", "1500", "1498"], answer: "1492", category: "História" },
+            { question: "Qual era o nome do navio de Pedro Álvares Cabral que descobriu o Brasil?", options: ["Pedro", "Santa Maria", "São Gabriel", "Santo Antônio"], answer: "Santo Antônio", category: "História" },
+            { question: "Quem foi o imperador francês derrotado em Waterloo?", options: ["Carlos Magno", "Napoleão III", "Napoleão Bonaparte", "Louis XVI"], answer: "Napoleão Bonaparte", category: "História" },
+            { question: "Qual guerra aconteceu entre 1939 e 1945?", options: ["Segunda Guerra Mundial", "Primeira Guerra Mundial", "Guerra Fria", "Guerra do Vietnã"], answer: "Segunda Guerra Mundial", category: "História" },
+            { question: "Em que ano caiu o Muro de Berlim?", options: ["1987", "1990", "1991", "1989"], answer: "1989", category: "História" },
+            { question: "Quem foi o responsável pela independência dos EUA?", options: ["George Washington", "Thomas Jefferson", "Benjamin Franklin", "Abraham Lincoln"], answer: "George Washington", category: "História" },
+            { question: "Qual civilização construiu Machu Picchu?", options: ["Astecas", "Egípcios", "Incas", "Maias"], answer: "Incas", category: "História" },
+            { question: "Quem era o presidente dos EUA durante a Guerra Civil?", options: ["Abraham Lincoln", "George Washington", "Jefferson Davis", "Theodore Roosevelt"], answer: "Abraham Lincoln", category: "História" },
+            { question: "Em que ano começou a Primeira Guerra Mundial?", options: ["1922", "1918", "1914", "1939"], answer: "1914", category: "História" },
+            { question: "Quem foi o faraó do Egito responsável pela construção da Grande Pirâmide?", options: ["Quéops", "Tutancâmon", "Ramsés II", "Akhenaton"], answer: "Quéops", category: "História" },
+            { question: "Qual país foi o primeiro a dar direito de voto às mulheres?", options: ["França", "Estados Unidos", "Reino Unido", "Nova Zelândia"], answer: "Nova Zelândia", category: "História" },
+            { question: "Em que ano aconteceu a Revolução Industrial?", options: ["Século XVII", "Século XVIII", "Século XIX", "Século XVI"], answer: "Século XVIII", category: "História" },
+            { question: "Quem assinou a Lei Áurea no Brasil?", options: ["Dom Pedro II", "Deodoro da Fonseca", "Getúlio Vargas", "Princesa Isabel"], answer: "Princesa Isabel", category: "História" },
+            { question: "Qual país lançou a primeira bomba atômica na Segunda Guerra Mundial?", options: ["Reino Unido", "Estados Unidos", "Alemanha", "Japão"], answer: "Estados Unidos", category: "História" },
+            { question: "Quem foi o primeiro imperador do Brasil?", options: ["Napoleão Bonaparte", "Dom Pedro II", "Dom Pedro I", "João VI"], answer: "Dom Pedro I", category: "História" },
+            { question: "Qual tratado dividiu o Novo Mundo entre Espanha e Portugal?", options: ["Paz de Westfália", "Tratado de Tordesilhas", "Tratado de Versalhes", "Tratado de Paris"], answer: "Tratado de Tordesilhas", category: "História" },
+            { question: "Em que ano Napoleão Bonaparte se tornou imperador?", options: ["1812", "1799", "1804", "1800"], answer: "1804", category: "História" },
+            { question: "Qual foi o primeiro país a abolir a escravidão?", options: ["Reino Unido", "França", "Estados Unidos", "Haiti"], answer: "Haiti", category: "História" },
+            { question: "Quem foi o líder da independência da Índia?", options: ["Subhas Chandra Bose", "Jawaharlal Nehru", "Mahatma Gandhi", "Indira Gandhi"], answer: "Mahatma Gandhi", category: "História" },
+            { question: "Qual foi o principal país aliado da Alemanha na Segunda Guerra Mundial?", options: ["França", "Japão", "Itália", "União Soviética"], answer: "Itália", category: "História" },
+            { question: "Quem descobriu a penicilina?", options: ["Louis Pasteur", "Robert Koch", "Alexander Fleming", "Marie Curie"], answer: "Alexander Fleming", category: "História" },
+            { question: "Em que ano ocorreu a Revolução Francesa?", options: ["1792", "1776", "1789", "1804"], answer: "1789", category: "História" },
+            { question: "Qual civilização construiu os zigurates?", options: ["Sumérios", "Egípcios", "Maias", "Astecas"], answer: "Sumérios", category: "História" },
+            { question: "Quem foi o líder da União Soviética durante a Segunda Guerra Mundial?", options: ["Brejnev", "Lenin", "Trotsky", "Joseph Stalin"], answer: "Joseph Stalin", category: "História" },
+            { question: "Em que ano terminou a Guerra do Vietnã?", options: ["1972", "1975", "1969", "1973"], answer: "1975", category: "História" },
+            { question: "Qual civilização construiu o Coliseu?", options: ["Romanos", "Egípcios", "Gregos", "Cartagineses"], answer: "Romanos", category: "História" },
+            { question: "Quem foi o primeiro-ministro britânico durante a Segunda Guerra Mundial?", options: ["Margaret Thatcher", "Winston Churchill", "Tony Blair", "Neville Chamberlain"], answer: "Winston Churchill", category: "História" },
+            { question: "Qual país invadiu a Polônia em 1939?", options: ["Japão", "Itália", "União Soviética", "Alemanha"], answer: "Alemanha", category: "História" },
+            { question: "Em que ano a independência do Brasil foi proclamada?", options: ["1822", "1889", "1815", "1808"], answer: "1822", category: "História" },
+            { question: "Quem foi o líder do movimento sul-africano contra o apartheid?", options: ["Thabo Mbeki", "Nelson Mandela", "F.W. de Klerk", "Desmond Tutu"], answer: "Nelson Mandela", category: "História" },
+            { question: "Qual imperador romano foi assassinado em 44 a.C.?", options: ["Nero", "Júlio César", "Augusto", "Calígula"], answer: "Júlio César", category: "História" },
+            { question: "Em que ano ocorreu a queda do Império Romano do Ocidente?", options: ["500", "476", "410", "395"], answer: "476", category: "História" },
+            { question: "Quem foi o último czar da Rússia?", options: ["o Grande", "Nicolau II", "Ivan IV", "Alexandre III", "Pedro"], answer: "Nicolau II", category: "História" },
+            { question: "Qual país colonizou a Índia antes da independência?", options: ["França", "Portugal", "Holanda", "Reino Unido"], answer: "Reino Unido", category: "História" },
+            { question: "Quem foi o primeiro presidente dos Estados Unidos?", options: ["Abraham Lincoln", "John Adams", "Thomas Jefferson", "George Washington"], answer: "George Washington", category: "História" },
+            { question: "Em que ano ocorreu a Revolução Chinesa que levou Mao Tse-Tung ao poder?", options: ["1937", "1950", "1949", "1945"], answer: "1949", category: "História" },
+            { question: "Qual civilização construiu a cidade de Teotihuacán?", options: ["Maias", "Astecas", "Olmecas", "Incas"], answer: "Maias", category: "História" },
+            { question: "Quem foi o líder do movimento pelos direitos civis nos EUA?", options: ["Frederick Douglass", "Rosa Parks", "Malcolm X", "Martin Luther King Jr."], answer: "Martin Luther King Jr.", category: "História" },
+            { question: "Em que ano terminou a Guerra Franco-Prussiana?", options: ["1866", "1871", "1875", "1880"], answer: "1871", category: "História" },
+            { question: "Quem foi o explorador que circunavegou o globo primeiro?", options: ["Vasco da Gama", "Cristóvão Colombo", "Ferdinand Magellan", "James Cook"], answer: "Ferdinand Magellan", category: "História" },
+            { question: "Qual país foi unificado por Otto von Bismarck?", options: ["Alemanha", "Itália", "Espanha", "França"], answer: "Alemanha", category: "História" },
+            { question: "Quem inventou a imprensa?", options: ["Leonardo da Vinci", "Galileu Galilei", "Johannes Gutenberg", "Thomas Edison"], answer: "Johannes Gutenberg", category: "História" },
+            { question: "Qual foi a principal cidade do Império Asteca?", options: ["Cuzco", "Chichén Itzá", "Teotihuacán", "Tenochtitlán"], answer: "Tenochtitlán", category: "História" },
+            { question: "Em que ano começou a Guerra de 100 Anos?", options: ["1350", "1320", "1337", "1346"], answer: "1337", category: "História" },
+            { question: "Quem foi o rei da França durante a Revolução Francesa?", options: ["Napoleão Bonaparte", "Henrique IV", "Carlos X", "Luis XVI"], answer: "Luis XVI", category: "História" },
+            { question: "Qual foi o tratado que encerrou a Guerra de 30 anos?", options: ["Tratado de Versalhes", "Paz de Westfália", "Tratado de Tordesilhas", "Tratado de Paris"], answer: "Paz de Westfália", category: "História" },
+            { question: "Quem liderou o movimento de independência da Argentina?", options: ["Simón Bolívar", "Bernardo O'Higgins", "Miguel Hidalgo", "José de San Martín"], answer: "José de San Martín", category: "História" },
+            { question: "Qual foi a primeira civilização a usar escrita cuneiforme?", options: ["Sumérios", "Maias", "Fenícios", "Egípcios"], answer: "Sumérios", category: "História" },
+            { question: "Quem foi o presidente do Brasil durante a ditadura militar iniciada em 1964?", options: ["Jânio Quadros", "Getúlio Vargas", "Castello Branco", "Juscelino Kubitschek"], answer: "Castello Branco", category: "História" },
+            { question: "Em que ano a União Europeia foi oficialmente criada?", options: ["1989", "1990", "1993", "2000"], answer: "1993", category: "História" },
+            { question: "Quem foi o líder da Revolução Cubana?", options: ["Che Guevara", "Fidel Castro", "Camilo Cienfuegos", "Raúl Castro"], answer: "Fidel Castro", category: "História" },
+            // Ciência
+            { question: "Qual é o maior planeta do nosso sistema solar?", options: ["Saturno", "Marte", "Terra", "Júpiter"], answer: "Júpiter", category: "Ciência" },
+            { question: "Qual é o símbolo químico para o ouro?", options: ["Au", "Fe", "Ag", "O"], answer: "Au", category: "Ciência" },
+            { question: "Quantos ossos tem o corpo humano adulto?", options: ["212", "198", "220", "206"], answer: "206", category: "Ciência" },
+            { question: "Qual cientista desenvolveu a teoria da relatividade?", options: ["Albert Einstein", "Nikola Tesla", "Galileu Galilei", "Isaac Newton"], answer: "Albert Einstein", category: "Ciência" },
+            { question: "Qual gás as plantas absorvem para a fotossíntese?", options: ["Nitrogênio", "Oxigênio", "Hidrogênio", "Dióxido de Carbono"], answer: "Dióxido de Carbono", category: "Ciência" },
+            { question: "Qual é o maior órgão do corpo humano?", options: ["Cérebro", "Coração", "Fígado", "Pele"], answer: "Pele", category: "Ciência" },
+            { question: "Qual é o elemento químico representado pelo símbolo O?", options: ["Óxido", "Oxigênio", "Ouro", "Ósmio"], answer: "Oxigênio", category: "Ciência" },
+            { question: "O que é fotossíntese?", options: ["Processo de respiração das plantas", "Processo de produção de alimentos das plantas", "Processo de reprodução das plantas", "Processo de defesa das plantas"], answer: "Processo de produção de alimentos das plantas", category: "Ciência" },
+            { question: "Qual é o planeta mais próximo do Sol?", options: ["Marte", "Mercúrio", "Vênus", "Terra"], answer: "Mercúrio", category: "Ciência" },
+            { question: "Qual é a principal fonte de energia para os seres vivos?", options: ["Sol", "Alimentos", "Ar", "Água"], answer: "Sol", category: "Ciência" },
+            { question: "O que é DNA?", options: ["Proteína", "Ácido ribonucleico", "Ácido nucléico", "Ácido desoxirribonucleico"], answer: "Ácido desoxirribonucleico", category: "Ciência" },
+            { question: "Qual é o principal gás responsável pelo efeito estufa?", options: ["Nitrogênio", "Oxigênio", "Metano", "Dióxido de carbono"], answer: "Dióxido de carbono", category: "Ciência" },
+            { question: "Em qual parte da célula ocorre a respiração celular?", options: ["Membrana plasmática", "Núcleo", "Mitocôndria", "Citoplasma"], answer: "Mitocôndria", category: "Ciência" },
+            { question: "Qual é o processo que transforma a água líquida em vapor?", options: ["Solidificação", "Evaporação", "Congelação", "Condensação"], answer: "Evaporação", category: "Ciência" },
+            { question: "Quem propôs a teoria da relatividade?", options: ["Nikola Tesla", "Galileu Galilei", "Albert Einstein", "Isaac Newton"], answer: "Albert Einstein", category: "Ciência" },
+            { question: "Qual é a função dos ribossomos nas células?", options: ["Produzir proteínas", "Controlar a divisão celular", "Armazenar energia", "Defender a célula"], answer: "Produzir proteínas", category: "Ciência" },
+            { question: "O que é um ecossistema?", options: ["Uma área de terra", "Conjunto de organismos vivos e seu ambiente", "Uma espécie de planta", "Uma cadeia alimentar"], answer: "Conjunto de organismos vivos e seu ambiente", category: "Ciência" },
+            { question: "Qual é a unidade básica de um ser vivo?", options: ["Célula", "Sistema", "Órgão", "Tecido"], answer: "Célula", category: "Ciência" },
+            { question: "Qual a principal função do sistema circulatório?", options: ["Produção de hormônios", "Transporte de oxigênio e dióxido de carbono", "Transporte de nutrientes", "Respiração"], answer: "Transporte de oxigênio e dióxido de carbono", category: "Ciência" },
+            { question: "Qual é o maior animal terrestre?", options: ["Baleia", "Girafa", "Leão", "Elefante"], answer: "Elefante", category: "Ciência" },
+            { question: "Em que parte do corpo humano é produzido o sangue?", options: ["Coração", "Fígado", "Rim", "Medula óssea"], answer: "Medula óssea", category: "Ciência" },
+            { question: "O que é a tectônica de placas?", options: ["Teoria sobre a movimentação das massas de ar", "Teoria sobre o movimento dos oceanos", "Teoria sobre os movimentos das placas continentais", "Teoria sobre a formação do solo"], answer: "Teoria sobre os movimentos das placas continentais", category: "Ciência" },
+            { question: "Qual é o nome do processo que as plantas utilizam para produzir seu alimento?", options: ["Fermentação", "Digestão", "Fotossíntese", "Respiração celular"], answer: "Fotossíntese", category: "Ciência" },
+            { question: "Qual é o estado físico da água a 0°C?", options: ["Sólido", "Plasma", "Líquido", "Gasoso"], answer: "Sólido", category: "Ciência" },
+            { question: "O que é um átomo?", options: ["Uma molécula", "Um tipo de energia", "A menor partícula de um elemento", "Uma célula viva"], answer: "A menor partícula de um elemento", category: "Ciência" },
+            { question: "Em que estado a água se encontra a 100°C?", options: ["Plasma", "Sólido", "Gasoso", "Líquido"], answer: "Gasoso", category: "Ciência" },
+            { question: "Qual é a principal função do sistema nervoso?", options: ["Coordenar os movimentos", "Produzir hormônios", "Regenerar células", "Transportar oxigênio"], answer: "Coordenar os movimentos", category: "Ciência" },
+            { question: "Qual é o principal combustível usado nas usinas nucleares?", options: ["Gás natural", "Água", "Carvão", "Uranium"], answer: "Uranium", category: "Ciência" },
+            { question: "Qual a camada mais externa da Terra?", options: ["Litosfera", "Manto", "Troposfera", "Núcleo"], answer: "Litosfera", category: "Ciência" },
+            { question: "O que é a biodiversidade?", options: ["Variedade de organismos em um ecossistema", "Variedade de organismos microscópicos", "Número de espécies de plantas", "Diversidade de solos"], answer: "Variedade de organismos em um ecossistema", category: "Ciência" },
+            { question: "Quem foi o inventor da lâmpada incandescente?", options: ["Nikola Tesla", "Thomas Edison", "Galileu Galilei", "Albert Einstein"], answer: "Thomas Edison", category: "Ciência" },
+            { question: "Qual é o nome da camada de ozônio?", options: ["Exosfera", "Estratosfera", "Troposfera", "Termosfera"], answer: "Estratosfera", category: "Ciência" },
+            { question: "O que é um gene?", options: ["Uma molécula de oxigênio", "Uma sequência de DNA que define características", "Uma célula", "Uma proteína"], answer: "Uma sequência de DNA que define características", category: "Ciência" },
+            { question: "Qual é a diferença entre um vírus e uma bactéria?", options: ["Vírus são menores e não têm células", "Bactérias não têm DNA", "Bactérias são maiores e não têm células", "Vírus não causam doenças"], answer: "Vírus são menores e não têm células", category: "Ciência" },
+            { question: "Qual é a função dos leucócitos no sangue?", options: ["Combater infecções", "Transportar nutrientes", "Transportar oxigênio", "Coagular o sangue"], answer: "Combater infecções", category: "Ciência" },
+            { question: "Qual é a principal fonte de oxigênio para os seres vivos?", options: ["Oceanos", "Solo", "Plantas", "Animais"], answer: "Plantas", category: "Ciência" },
+            { question: "O que é a fototropismo nas plantas?", options: ["Movimento para longe da água", "Crescimento em direção ao solo", "Movimento das plantas em direção à luz", "Movimento das raízes para baixo"], answer: "Movimento das plantas em direção à luz", category: "Ciência" },
+            { question: "O que são os átomos de carbono em uma molécula de glicose?", options: ["Átomos de hidrogênio", "Átomos de oxigênio", "Átomos de nitrogênio", "Átomos de carbono"], answer: "Átomos de carbono", category: "Ciência" },
+            { question: "Qual é o nome do processo de transformação de uma substância de sólido para gasoso?", options: ["Fusão", "Sublimação", "Condensação", "Evaporação"], answer: "Sublimação", category: "Ciência" },
+            { question: "Qual é o planeta conhecido como 'Planeta Vermelho'?", options: ["Marte", "Vênus", "Saturno", "Júpiter"], answer: "Marte", category: "Ciência" },
+            { question: "Qual o nome do nosso satélite natural?", options: ["Lua", "Júpiter", "Estrela Polar", "Sol"], answer: "Lua", category: "Ciência" },
+            { question: "Qual é a função das mitocôndrias nas células?", options: ["Controlar a divisão celular", "Produzir energia", "Armazenar energia", "Produzir proteínas"], answer: "Produzir energia", category: "Ciência" },
+            { question: "O que é a força de gravidade?", options: ["Força que repele objetos", "Força que causa a movimentação dos planetas", "Força que atrai a Lua para a Terra", "Força que atrai objetos para o centro da Terra"], answer: "Força que atrai objetos para o centro da Terra", category: "Ciência" },
+            { question: "Qual é o elemento mais abundante na crosta terrestre?", options: ["Oxigênio", "Alumínio", "Silício", "Ferro"], answer: "Oxigênio", category: "Ciência" },
+            { question: "Qual o nome do processo que converte a luz solar em energia pelas plantas?", options: ["Fermentação", "Respiração celular", "Fotossíntese", "Digestão"], answer: "Fotossíntese", category: "Ciência" },
+            { question: "Em qual parte do corpo humano estão localizados os neurônios?", options: ["Pâncreas", "Estômago", "Cérebro", "Coração"], answer: "Cérebro", category: "Ciência" },
+            { question: "O que é uma cadeia alimentar?", options: ["Formação de rochas", "Sequência de organismos que se alimentam uns dos outros", "Ciclo da água", "Processo de fotossíntese"], answer: "Sequência de organismos que se alimentam uns dos outros", category: "Ciência" },
+            { question: "Qual é o nome da teoria que descreve a origem do universo?", options: ["Teoria da Evolução", "Teoria da Gravidade", "Teoria do Big Bang", "Teoria da Relatividade"], answer: "Teoria do Big Bang", category: "Ciência" },
+            { question: "O que é a evaporação?", options: ["Mudança de estado da água de gasoso para líquido", "Mudança de estado da água de líquido para sólido", "Mudança de estado da água de líquido para gás", "Mudança de estado da água de sólido para líquido"], answer: "Mudança de estado da água de líquido para gás", category: "Ciência" },
+            { question: "Qual é a parte do cérebro responsável pelo controle dos movimentos voluntários?", options: ["Hipotálamo", "Cerebelo", "Medula espinhal", "Cérebro"], answer: "Cerebelo", category: "Ciência" },
+            { question: "Qual é a unidade básica de medida para a intensidade de corrente elétrica?", options: ["Watt", "Volt", "Ohm", "Amperes"], answer: "Amperes", category: "Ciência" },
+            // Geografia
+            { question: "Qual é o maior oceano do mundo?", options: ["Ártico", "Atlântico", "Índico", "Pacífico"], answer: "Pacífico", category: "Geografia" },
+            { question: "Em que continente fica o Egito?", options: ["África", "Europa", "Ásia", "Oceania"], answer: "África", category: "Geografia" },
+            { question: "Qual é a capital da Austrália?", options: ["Camberra", "Melbourne", "Sydney", "Perth"], answer: "Camberra", category: "Geografia" },
+            { question: "Qual é o rio mais longo do mundo?", options: ["Nilo", "Mississipi", "Amazonas", "Yangtzé"], answer: "Amazonas", category: "Geografia" },
+            { question: "Qual país é conhecido como a 'Terra do Sol Nascente'?", options: ["Coreia do Sul", "China", "Tailândia", "Japão"], answer: "Japão", category: "Geografia" },
+            { question: "Onde fica o Monte Everest?", options: ["Índia", "Paquistão", "Nepal", "China"], answer: "Nepal", category: "Geografia" },
+            { question: "Onde está localizada a Floresta Amazônica?", options: ["Equador", "Brasil", "Peru", "Colômbia"], answer: "Brasil", category: "Geografia" },
+            { question: "Onde se encontra o Deserto do Saara?", options: ["América do Sul", "Ásia", "América do Norte", "África"], answer: "África", category: "Geografia" },
+            { question: "Onde fica o maior lago do mundo em volume de água?", options: ["Brasil", "Canadá", "Rússia", "Cazaquistão"], answer: "Rússia", category: "Geografia" },
+            { question: "Onde está localizado o Rio Nilo?", options: ["Egito", "Níger", "Marrocos", "África do Sul"], answer: "Egito", category: "Geografia" },
+            { question: "Onde se encontra a Cordilheira dos Andes?", options: ["América do Norte", "América do Sul", "Ásia", "África"], answer: "América do Sul", category: "Geografia" },
+            { question: "Onde está o deserto de Atacama?", options: ["Chile", "Bolívia", "Peru", "Argentina"], answer: "Chile", category: "Geografia" },
+            { question: "Onde está o Monte Kilimanjaro?", options: ["Quênia", "Uganda", "Etiópia", "Tanzânia"], answer: "Tanzânia", category: "Geografia" },
+            { question: "Onde se localiza o maior rio do mundo em extensão?", options: ["Nilo", "Yangtze", "Mississippi", "Amazônia"], answer: "Amazônia", category: "Geografia" },
+            { question: "Onde fica a cidade de Petra?", options: ["Jordânia", "Egito", "Irã", "Síria"], answer: "Jordânia", category: "Geografia" },
+            { question: "Onde está o maior deserto do mundo?", options: ["Saara", "Kalahari", "Antártica", "Gobi"], answer: "Antártica", category: "Geografia" },
+            { question: "Onde se localiza a Grande Barreira de Coral?", options: ["Filipinas", "Indonésia", "Austrália", "Malásia"], answer: "Austrália", category: "Geografia" },
+            { question: "Onde fica a cidade de Machu Picchu?", options: ["Peru", "Bolívia", "Chile", "Equador"], answer: "Peru", category: "Geografia" },
+            { question: "Onde está o Parque Nacional de Yellowstone?", options: ["México", "Colômbia", "Estados Unidos", "Canadá"], answer: "Estados Unidos", category: "Geografia" },
+            { question: "Onde se localiza o Canal do Panamá?", options: ["Honduras", "Colômbia", "Panamá", "Costa Rica"], answer: "Panamá", category: "Geografia" },
+            { question: "Onde se encontra o Lago Baikal?", options: ["Canadá", "Estados Unidos", "Rússia", "China"], answer: "Rússia", category: "Geografia" },
+            { question: "Onde está a cidade de Veneza?", options: ["Grécia", "Espanha", "Itália", "França"], answer: "Itália", category: "Geografia" },
+            { question: "Onde se localiza a ilha de Madagascar?", options: ["África", "Oceania", "América", "Ásia"], answer: "África", category: "Geografia" },
+            { question: "Onde está localizada a cidade de Sydney?", options: ["Austrália", "Papua-Nova Guiné", "Nova Zelândia", "Ilhas Fiji"], answer: "Austrália", category: "Geografia" },
+            { question: "Onde está o maior arquipélago do mundo?", options: ["Malásia", "Filipinas", "Japão", "Indonésia"], answer: "Indonésia", category: "Geografia" },
+            { question: "Onde fica o Monte Fuji?", options: ["Coreia do Sul", "Taiwan", "China", "Japão"], answer: "Japão", category: "Geografia" },
+            { question: "Onde está localizado o Taj Mahal?", options: ["Nepal", "Sri Lanka", "Paquistão", "Índia"], answer: "Índia", category: "Geografia" },
+            { question: "Onde se encontra o Lago Titicaca?", options: ["Equador", "Chile", "Peru", "Bolívia"], answer: "Peru", category: "Geografia" },
+            { question: "Onde se localiza o Parque Nacional de Banff?", options: ["Estados Unidos", "Canadá", "Argentina", "México"], answer: "Canadá", category: "Geografia" },
+            { question: "Onde fica o país de Luxemburgo?", options: ["Oceania", "África", "Europa", "América do Norte"], answer: "Europa", category: "Geografia" },
+            { question: "Onde fica a Ilha de Páscoa?", options: ["Fiji", "Indonésia", "Chile", "Polinésia Francesa"], answer: "Chile", category: "Geografia" },
+            { question: "Onde se localiza o Delta do Okavango?", options: ["Namíbia", "África do Sul", "Zâmbia", "Botsuana"], answer: "Botsuana", category: "Geografia" },
+            { question: "Onde fica o Monte McKinley?", options: ["Canadá", "Chile", "Argentina", "Alasca"], answer: "Alasca", category: "Geografia" },
+            { question: "Onde fica a cidade de Nova York?", options: ["México", "Canadá", "Estados Unidos", "Cuba"], answer: "Estados Unidos", category: "Geografia" },
+            { question: "Onde está localizada a cidade de Cairo?", options: ["Marrocos", "Egito", "Tunísia", "Líbano"], answer: "Egito", category: "Geografia" },
+            { question: "Onde fica o Rio Amazonas?", options: ["Brasil", "Colômbia", "Venezuela", "Peru"], answer: "Brasil", category: "Geografia" },
+            { question: "Onde está o Parque Nacional de Kruger?", options: ["Namíbia", "Botsuana", "África do Sul", "Quênia"], answer: "África do Sul", category: "Geografia" },
+            { question: "Onde se encontra a cidade de Istambul?", options: ["Turquia", "Sérvia", "Egito", "Grécia"], answer: "Turquia", category: "Geografia" },
+            { question: "Onde se localiza o Parque Nacional Torres del Paine?", options: ["Chile", "Peru", "Brasil", "Argentina"], answer: "Chile", category: "Geografia" },
+            { question: "Onde fica a cidade de Buenos Aires?", options: ["Chile", "Uruguai", "Brasil", "Argentina"], answer: "Argentina", category: "Geografia" },
+            { question: "Onde está o Cabo da Boa Esperança?", options: ["Namíbia", "África do Sul", "Mozambique", "Angola"], answer: "África do Sul", category: "Geografia" },
+            { question: "Onde fica a cidade de Roma?", options: ["Itália", "França", "Portugal", "Espanha"], answer: "Itália", category: "Geografia" },
+            { question: "Onde está localizada a Ilha de Fernando de Noronha?", options: ["Brasil", "Uruguai", "Argentina", "Chile"], answer: "Brasil", category: "Geografia" },
+            { question: "Onde fica o Parque Nacional da Serra da Canastra?", options: ["Equador", "Colômbia", "Brasil", "Peru"], answer: "Brasil", category: "Geografia" },
+            { question: "Onde está o país de Nepal?", options: ["Ásia", "América do Sul", "África", "Oceania"], answer: "Ásia", category: "Geografia" },
+            { question: "Onde fica o deserto de Kalahari?", options: ["África", "Ásia", "América do Norte", "América do Sul"], answer: "África", category: "Geografia" },
+            { question: "Onde se localiza a cidade de São Petersburgo?", options: ["Ucrânia", "Rússia", "Finlândia", "Polônia"], answer: "Rússia", category: "Geografia" },
+            { question: "Onde está o ponto mais baixo da Terra?", options: ["Deserto de Atacama", "Mar Morto", "Oceano Pacífico", "Vale da Morte"], answer: "Mar Morto", category: "Geografia" },
+            { question: "Onde se localiza o Rio Danúbio?", options: ["Europa", "Ásia", "África", "América do Sul"], answer: "Europa", category: "Geografia" },
+            { question: "Onde se encontra o Arquipélago de Galápagos?", options: ["Brasil", "Peru", "Chile", "Equador"], answer: "Equador", category: "Geografia" },
+            { question: "Onde fica o Pico da Neblina?", options: ["Peru", "Venezuela", "Colômbia", "Brasil"], answer: "Brasil", category: "Geografia" },
+            { question: "Onde se localiza a cidade de Toronto?", options: ["México", "Estados Unidos", "Jamaica", "Canadá"], answer: "Canadá", category: "Geografia" },
+            { question: "Onde fica a cidade de Cidade do Cabo?", options: ["Namíbia", "África do Sul", "Botsuana", "Zimbábue"], answer: "África do Sul", category: "Geografia" },
+            { question: "Onde se encontra o Rio Ganges?", options: ["Índia", "Paquistão", "Nepal", "Bangladesh"], answer: "Índia", category: "Geografia" },
+            { question: "Onde se localiza a cidade de Santiago?", options: ["Uruguai", "Argentina", "Chile", "Peru"], answer: "Chile", category: "Geografia" },
+            { question: "Onde está a cidade de Dubai?", options: ["Irã", "Emirados Árabes Unidos", "Arábia Saudita", "Kuwait"], answer: "Emirados Árabes Unidos", category: "Geografia" },
+            // Esportes
+            { question: "Quantos jogadores um time de futebol tem em campo?", options: ["12", "11", "9", "10"], answer: "11", category: "Esportes" },
+            { question: "Qual país sediou a Copa do Mundo de 2014?", options: ["África do Sul", "Alemanha", "Rússia", "Brasil"], answer: "Brasil", category: "Esportes" },
+            { question: "Qual atleta é conhecido como 'O Rei do Futebol'?", options: ["Messi", "Cristiano Ronaldo", "Pelé", "Maradona"], answer: "Pelé", category: "Esportes" },
+            { question: "Em que esporte Michael Jordan se destacou?", options: ["Beisebol", "Basquete", "Tênis", "Futebol Americano"], answer: "Basquete", category: "Esportes" },
+            { question: "Qual é a corrida de ciclismo mais famosa do mundo?", options: ["Vuelta a España", "Tour de France", "Paris-Roubaix", "Giro d'Italia"], answer: "Tour de France", category: "Esportes" },
+            { question: "Quem venceu a Copa do Mundo de Futebol em 2018?", options: ["Croácia", "Brasil", "França", "Alemanha"], answer: "França", category: "Esportes" },
+            { question: "Quantos jogadores compõem um time de vôlei em quadra?", options: ["4", "7", "6", "5"], answer: "6", category: "Esportes" },
+            { question: "Em que país foram realizados os Jogos Olímpicos de 2016?", options: ["China", "Rússia", "Brasil", "Japão"], answer: "Brasil", category: "Esportes" },
+            { question: "Quem é considerado o maior nadador olímpico da história?", options: ["Ian Thorpe", "César Cielo", "Mark Spitz", "Michael Phelps"], answer: "Michael Phelps", category: "Esportes" },
+            { question: "Qual país tem mais títulos da Copa do Mundo de Futebol?", options: ["Brasil", "Argentina", "Alemanha", "Itália"], answer: "Brasil", category: "Esportes" },
+            { question: "Quem é o maior artilheiro da história da Seleção Brasileira?", options: ["Neymar", "Ronaldo", "Pelé", "Romário"], answer: "Neymar", category: "Esportes" },
+            { question: "Qual é o esporte principal praticado em Wimbledon?", options: ["Golfe", "Futebol", "Tênis", "Críquete"], answer: "Tênis", category: "Esportes" },
+            { question: "Quantos minutos dura uma partida oficial de futebol?", options: ["45", "60", "90", "120"], answer: "90", category: "Esportes" },
+            { question: "Quem é conhecido como 'Bolt das pistas'?", options: ["Carl Lewis", "Usain Bolt", "Tyson Gay", "Asafa Powell"], answer: "Usain Bolt", category: "Esportes" },
+            { question: "Quantos anéis possui o símbolo das Olimpíadas?", options: ["5", "7", "4", "6"], answer: "5", category: "Esportes" },
+            { question: "Qual atleta ganhou 7 títulos de Fórmula 1?", options: ["Lewis Hamilton", "Sebastian Vettel", "Ayrton Senna", "Michael Schumacher"], answer: "Michael Schumacher", category: "Esportes" },
+            { question: "Qual esporte utiliza uma prancha e ondas?", options: ["Windsurf", "Canoagem", "Surfe", "Remo"], answer: "Surfe", category: "Esportes" },
+            { question: "Quem é o maior campeão da história da NBA?", options: ["Los Angeles Lakers", "Golden State Warriors", "Chicago Bulls", "Boston Celtics"], answer: "Boston Celtics", category: "Esportes" },
+            { question: "Em que esporte se destaca Simone Biles?", options: ["Ginástica Artística", "Natação", "Patinação", "Atletismo"], answer: "Ginástica Artística", category: "Esportes" },
+            { question: "Qual é o país de origem do judô?", options: ["Coreia do Sul", "Japão", "Tailândia", "China"], answer: "Japão", category: "Esportes" },
+            { question: "Quantas voltas tem uma maratona olímpica?", options: ["10", "42", "5", "Nenhuma {prova única}"], answer: "Nenhuma {prova única}", category: "Esportes" },
+            { question: "Quem venceu a Copa do Mundo de Futebol de 2002?", options: ["França", "Alemanha", "Brasil", "Itália"], answer: "Brasil", category: "Esportes" },
+            { question: "Qual é o principal campeonato de futebol da Europa?", options: ["La Liga", "Premier League", "Champions League", "Eurocopa"], answer: "Champions League", category: "Esportes" },
+            { question: "Quem foi Ayrton Senna?", options: ["Tenista", "Jogador de futebol", "Nadador", "Piloto de Fórmula 1"], answer: "Piloto de Fórmula 1", category: "Esportes" },
+            { question: "Qual esporte é conhecido como 'esporte bretão'?", options: ["Críquete", "Rúgbi", "Futebol", "Tênis"], answer: "Futebol", category: "Esportes" },
+            { question: "Em que país nasceu Lionel Messi?", options: ["Argentina", "Uruguai", "Espanha", "Brasil"], answer: "Argentina", category: "Esportes" },
+            { question: "Qual o nome da competição entre seleções da América do Sul?", options: ["Libertadores", "Eurocopa", "Copa América", "Copa Ouro"], answer: "Copa América", category: "Esportes" },
+            { question: "Em que ano o Brasil sediou a sua primeira Copa do Mundo?", options: ["1962", "1970", "1950", "2014"], answer: "1950", category: "Esportes" },
+            { question: "Qual o nome do famoso estádio do Rio de Janeiro?", options: ["Beira-Rio", "Mineirão", "Maracanã", "Morumbi"], answer: "Maracanã", category: "Esportes" },
+            { question: "Qual país é referência no críquete?", options: ["Espanha", "Índia", "Alemanha", "Brasil"], answer: "Índia", category: "Esportes" },
+            { question: "Quem ganhou o título da Fórmula 1 em 2021?", options: ["Sebastian Vettel", "Lewis Hamilton", "Valtteri Bottas", "Max Verstappen"], answer: "Max Verstappen", category: "Esportes" },
+            { question: "Quantas medalhas de ouro o Brasil conquistou em Tóquio 2020?", options: ["7", "9", "5", "8"], answer: "7", category: "Esportes" },
+            { question: "Qual o nome da principal competição de clubes da América do Sul?", options: ["Sul-Americana", "Libertadores", "Brasileirão", "Recopa"], answer: "Libertadores", category: "Esportes" },
+            { question: "Em que país nasceu Novak Djokovic?", options: ["Sérvia", "Suíça", "Espanha", "Rússia"], answer: "Sérvia", category: "Esportes" },
+            { question: "Qual é o nome do esporte com tacos e buracos?", options: ["Golfe", "Polo", "Beisebol", "Croqué"], answer: "Golfe", category: "Esportes" },
+            { question: "Qual é o país sede dos Jogos Olímpicos de 2024?", options: ["China", "França", "EUA", "Japão"], answer: "França", category: "Esportes" },
+            { question: "Em que esporte é usada uma raquete e volante?", options: ["Tênis de mesa", "Squash", "Badminton", "Tênis"], answer: "Badminton", category: "Esportes" },
+            { question: "Qual é o nome da liga de futebol dos EUA?", options: ["NFL", "MLS", "NBA", "MLB"], answer: "MLS", category: "Esportes" },
+            { question: "Qual é o nome da liga de beisebol americana?", options: ["NHL", "NBA", "NFL", "MLB"], answer: "MLB", category: "Esportes" },
+            { question: "Qual é o time com mais títulos da Libertadores?", options: ["Boca Juniors", "Independiente", "São Paulo", "River Plate"], answer: "Independiente", category: "Esportes" },
+            { question: "Quem foi o craque brasileiro apelidado de 'Fenômeno'?", options: ["Zico", "Ronaldo", "Pelé", "Ronaldinho"], answer: "Ronaldo", category: "Esportes" },
+            { question: "Quem é o atual recordista dos 100 metros rasos?", options: ["Usain Bolt", "Asafa Powell", "Carl Lewis", "Tyson Gay"], answer: "Usain Bolt", category: "Esportes" },
+            { question: "Qual país sediou os Jogos Olímpicos de 2008?", options: ["China", "Grécia", "Inglaterra", "Alemanha"], answer: "China", category: "Esportes" },
+            { question: "Qual é o esporte de Conor McGregor?", options: ["MMA", "Judô", "Caratê", "Boxe"], answer: "MMA", category: "Esportes" },
+            { question: "Quem é o maior vencedor do Tour de France?", options: ["Eddy Merckx", "Bernard Hinault", "Miguel Indurain", "Lance Armstrong*"], answer: "Eddy Merckx", category: "Esportes" },
+            { question: "Qual é o nome do campeonato brasileiro de futebol?", options: ["Brasileirão", "Copa do Brasil", "Série B", "Paulistão"], answer: "Brasileirão", category: "Esportes" },
+            { question: "Qual o nome da ginasta brasileira campeã mundial?", options: ["Rebeca Andrade", "Daiane dos Santos", "Daniele Hypólito", "Jade Barbosa"], answer: "Rebeca Andrade", category: "Esportes" },
+            { question: "Em que esporte Guga Kuerten se destacou?", options: ["Basquete", "Vôlei", "Tênis", "Futebol"], answer: "Tênis", category: "Esportes" },
+            { question: "Qual país venceu a Copa do Mundo Feminina de 2019?", options: ["EUA", "Brasil", "Holanda", "Alemanha"], answer: "EUA", category: "Esportes" },
+            { question: "Qual esporte é praticado na NBA?", options: ["Beisebol", "Hóquei", "Futebol", "Basquete"], answer: "Basquete", category: "Esportes" },
+            { question: "Qual é a principal competição de clubes da Europa?", options: ["Europa League", "Conference League", "Champions League", "Premier League"], answer: "Champions League", category: "Esportes" },
+            { question: "Quem venceu a Copa do Mundo de 1994?", options: ["Itália", "Alemanha", "Argentina", "Brasil"], answer: "Brasil", category: "Esportes" },
+            { question: "Quantas Copas do Mundo o Brasil já venceu?", options: ["5", "4", "6", "3"], answer: "5", category: "Esportes" },
+            { question: "Em qual cidade estão localizadas as 24 Horas de Le Mans?", options: ["Paris", "Nice", "Le Mans", "Mônaco"], answer: "Le Mans", category: "Esportes" },
             // Cultura Pop
-            { question: "Qual banda é conhecida pelo álbum 'The Dark Side of the Moon'?", options: ["The Beatles", "Led Zeppelin", "Pink Floyd", "Queen"], answer: "Pink Floyd" },
-            { question: "Quem escreveu 'Harry Potter'?", options: ["J.R.R. Tolkien", "George R.R. Martin", "J.K. Rowling", "Stephen King"], answer: "J.K. Rowling" },
-            { question: "Qual é o nome do super-herói bilionário da DC Comics?", options: ["Superman", "Homem de Ferro", "Batman", "Capitão América"], answer: "Batman" },
-            { question: "Qual filme ganhou o Oscar de Melhor Filme em 2020?", options: ["1917", "Coringa", "Parasita", "Era uma Vez em Hollywood"], answer: "Parasita" },
-            { question: "Qual o nome do personagem principal da série 'Breaking Bad'?", options: ["Jesse Pinkman", "Saul Goodman", "Walter White", "Gus Fring"], answer: "Walter White" },
+            { question: "Qual banda é conhecida pelo álbum 'The Dark Side of the Moon'?", options: ["The Beatles", "Led Zeppelin", "Pink Floyd", "Queen"], answer: "Pink Floyd", category: "Cultura Pop" },
+            { question: "Quem escreveu 'Harry Potter'?", options: ["J.R.R. Tolkien", "George R.R. Martin", "J.K. Rowling", "Stephen King"], answer: "J.K. Rowling", category: "Cultura Pop" },
+            { question: "Qual é o nome do super-herói bilionário da DC Comics?", options: ["Superman", "Homem de Ferro", "Batman", "Capitão América"], answer: "Batman", category: "Cultura Pop" },
+            { question: "Qual filme ganhou o Oscar de Melhor Filme em 2020?", options: ["1917", "Coringa", "Parasita", "Era uma Vez em Hollywood"], answer: "Parasita", category: "Cultura Pop" },
+            { question: "Qual o nome do personagem principal da série 'Breaking Bad'?", options: ["Jesse Pinkman", "Saul Goodman", "Walter White", "Gus Fring"], answer: "Walter White", category: "Cultura Pop" },
+            { question: "Quem é o diretor do filme 'Pulp Fiction'?", options: ["Steven Spielberg", "Quentin Tarantino", "Martin Scorsese", "Christopher Nolan"], answer: "Quentin Tarantino", category: "Cultura Pop" },
+            { question: "Qual grupo pop lançou o hit 'Dynamite'?", options: ["BLACKPINK", "EXO", "BTS", "TWICE"], answer: "BTS", category: "Cultura Pop" },
+            { question: "Em que ano foi lançado o primeiro filme dos Vingadores?", options: ["2010", "2011", "2012", "2013"], answer: "2012", category: "Cultura Pop" },
+            { question: "Qual é o nome verdadeiro do Homem-Aranha no MCU?", options: ["Peter Parker", "Miles Morales", "Eddie Brock", "Steve Rogers"], answer: "Peter Parker", category: "Cultura Pop" },
+            { question: "Qual série da Netflix é baseada em um jogo e estrelada por Henry Cavill?", options: ["Stranger Things", "The Witcher", "Dark", "Shadow and Bone"], answer: "The Witcher", category: "Cultura Pop" },
+            { question: "Quem é o criador da série 'Os Simpsons'?", options: ["Matt Groening", "Seth MacFarlane", "Trey Parker", "Dan Harmon"], answer: "Matt Groening", category: "Cultura Pop" },
+            { question: "Qual cantor lançou o álbum 'After Hours' com o hit 'Blinding Lights'?", options: ["Drake", "The Weeknd", "Post Malone", "Bruno Mars"], answer: "The Weeknd", category: "Cultura Pop" },
+            { question: "Em 'Friends', qual é o nome do macaco de Ross?", options: ["Coco", "Marcel", "George", "Mojo"], answer: "Marcel", category: "Cultura Pop" },
+            { question: "Qual personagem da Marvel é interpretado por Chadwick Boseman?", options: ["Falcão", "Pantera Negra", "Homem de Ferro", "Homem-Aranha"], answer: "Pantera Negra", category: "Cultura Pop" },
+            { question: "Qual atriz interpretou Katniss Everdeen em 'Jogos Vorazes'?", options: ["Emma Stone", "Jennifer Lawrence", "Emma Watson", "Scarlett Johansson"], answer: "Jennifer Lawrence", category: "Cultura Pop" },
+            { question: "Qual é o nome da escola de magia em 'Harry Potter'?", options: ["Durmstrang", "Beauxbatons", "Ilvermorny", "Hogwarts"], answer: "Hogwarts", category: "Cultura Pop" },
+            { question: "Qual é o nome do vilão principal em 'Vingadores: Guerra Infinita'?", options: ["Loki", "Ultron", "Thanos", "Hela"], answer: "Thanos", category: "Cultura Pop" },
+            { question: "Quem é o protagonista da série 'Stranger Things'?", options: ["Mike", "Will", "Eleven", "Dustin"], answer: "Eleven", category: "Cultura Pop" },
+            { question: "Qual grupo musical foi formado no programa 'The X Factor' em 2010?", options: ["One Direction", "Fifth Harmony", "Little Mix", "BTS"], answer: "One Direction", category: "Cultura Pop" },
+            { question: "Qual atriz interpretou Hermione Granger?", options: ["Emma Watson", "Natalie Portman", "Millie Bobby Brown", "Keira Knightley"], answer: "Emma Watson", category: "Cultura Pop" },
+            { question: "Em que cidade se passa a maior parte da série 'Breaking Bad'?", options: ["Houston", "Phoenix", "Albuquerque", "Las Vegas"], answer: "Albuquerque", category: "Cultura Pop" },
+            { question: "Qual cantor é conhecido como 'Rei do Pop'?", options: ["Elvis Presley", "Justin Bieber", "Michael Jackson", "Prince"], answer: "Michael Jackson", category: "Cultura Pop" },
+            { question: "Qual filme da Marvel apresenta o multiverso pela primeira vez?", options: ["Doutor Estranho no Multiverso da Loucura", "Homem-Aranha: Sem Volta para Casa", "Eternos", "Vingadores: Ultimato"], answer: "Homem-Aranha: Sem Volta para Casa", category: "Cultura Pop" },
+            { question: "Qual é o nome da princesa em 'Frozen' que tem poderes de gelo?", options: ["Anna", "Elsa", "Moana", "Aurora"], answer: "Elsa", category: "Cultura Pop" },
+            { question: "Qual personagem da DC é conhecido como o 'Homem de Aço'?", options: ["Batman", "Flash", "Aquaman", "Superman"], answer: "Superman", category: "Cultura Pop" },
+            { question: "Qual banda criou o álbum 'Abbey Road'?", options: ["Pink Floyd", "Queen", "The Beatles", "The Rolling Stones"], answer: "The Beatles", category: "Cultura Pop" },
+            { question: "Qual série da HBO é baseada nos livros de George R.R. Martin?", options: ["House of the Dragon", "Game of Thrones", "The Witcher", "Westworld"], answer: "Game of Thrones", category: "Cultura Pop" },
+            { question: "Qual é o nome do brinquedo cowboy em 'Toy Story'?", options: ["Buzz", "Woody", "Jessie", "Andy"], answer: "Woody", category: "Cultura Pop" },
+            { question: "Qual cantor fez sucesso com 'Shape of You'?", options: ["Justin Timberlake", "Ed Sheeran", "Shawn Mendes", "Sam Smith"], answer: "Ed Sheeran", category: "Cultura Pop" },
+            { question: "Quem interpretou o Coringa em 'O Cavaleiro das Trevas'?", options: ["Heath Ledger", "Joaquin Phoenix", "Jared Leto", "Jack Nicholson"], answer: "Heath Ledger", category: "Cultura Pop" },
+            { question: "Qual franquia de filmes tem um personagem chamado Jack Sparrow?", options: ["Harry Potter", "Piratas do Caribe", "Indiana Jones", "Senhor dos Anéis"], answer: "Piratas do Caribe", category: "Cultura Pop" },
+            { question: "Quem é a personagem principal da série 'WandaVision'?", options: ["Natasha Romanoff", "Carol Danvers", "Wanda Maximoff", "Shuri"], answer: "Wanda Maximoff", category: "Cultura Pop" },
+            { question: "Qual é o nome do dragão em 'Como Treinar o Seu Dragão'?", options: ["Banguela", "Chama", "Tempestade", "Toothless"], answer: "Banguela", category: "Cultura Pop" },
+            { question: "Quem canta 'Bad Guy'?", options: ["Lorde", "Billie Eilish", "Ariana Grande", "Olivia Rodrigo"], answer: "Billie Eilish", category: "Cultura Pop" },
+            { question: "Qual série conta a história de um jovem Sheldon Cooper?", options: ["Big Bang Theory", "Young Sheldon", "Modern Family", "Brooklyn Nine-Nine"], answer: "Young Sheldon", category: "Cultura Pop" },
+            { question: "Qual é o nome do planeta natal do Superman?", options: ["Terra", "Asgard", "Krypton", "Vênus"], answer: "Krypton", category: "Cultura Pop" },
+            { question: "Quem criou a série 'Rick and Morty'?", options: ["Dan Harmon e Justin Roiland", "Matt Groening", "Seth MacFarlane", "Vince Gilligan"], answer: "Dan Harmon e Justin Roiland", category: "Cultura Pop" },
+            { question: "Qual é o nome do hobbit que carrega o anel em 'O Senhor dos Anéis'?", options: ["Sam", "Bilbo", "Frodo", "Pippin"], answer: "Frodo", category: "Cultura Pop" },
+            { question: "Quem interpreta Deadpool nos filmes?", options: ["Chris Evans", "Hugh Jackman", "Ryan Reynolds", "Tom Holland"], answer: "Ryan Reynolds", category: "Cultura Pop" },
+            { question: "Qual série é famosa pela frase 'Winter is Coming'?", options: ["The Witcher", "Vikings", "Game of Thrones", "The Last Kingdom"], answer: "Game of Thrones", category: "Cultura Pop" },
+            { question: "Qual é o nome da série protagonizada por Eleven e ambientada nos anos 80?", options: ["Dark", "Riverdale", "Stranger Things", "Locke & Key"], answer: "Stranger Things", category: "Cultura Pop" },
+            { question: "Qual personagem de Star Wars disse 'Que a Força esteja com você'?", options: ["Han Solo", "Obi-Wan Kenobi", "Yoda", "Luke Skywalker"], answer: "Obi-Wan Kenobi", category: "Cultura Pop" },
+            { question: "Quem é a popstar conhecida por vestir carne no VMA 2010?", options: ["Lady Gaga", "Katy Perry", "Rihanna", "Nicki Minaj"], answer: "Lady Gaga", category: "Cultura Pop" },
+            { question: "Qual é o nome do ator que interpreta o Wolverine?", options: ["Chris Hemsworth", "Robert Downey Jr.", "Hugh Jackman", "Ryan Reynolds"], answer: "Hugh Jackman", category: "Cultura Pop" },
+            { question: "Qual filme da Pixar se passa dentro da mente de uma garota?", options: ["Divertida Mente", "Soul", "Up", "Viva – A Vida é uma Festa"], answer: "Divertida Mente", category: "Cultura Pop" },
+            { question: "Qual cantor foi o primeiro a atingir 1 bilhão de views no YouTube com um clipe?", options: ["Justin Bieber", "Luis Fonsi", "Psy", "Ed Sheeran"], answer: "Psy", category: "Cultura Pop" },
+            { question: "Qual é o nome do robô em 'Star Wars' que é dourado?", options: ["R2-D2", "C-3PO", "BB-8", "K-2SO"], answer: "C-3PO", category: "Cultura Pop" },
             // Variedades
-            { question: "Qual a cor resultante da mistura de azul e amarelo?", options: ["Verde", "Laranja", "Roxo", "Marrom"], answer: "Verde" },
-            { question: "Qual destes animais é um mamífero?", options: ["Tubarão", "Pinguim", "Baleia", "Crocodilo"], answer: "Baleia" },
-            { question: "Quantos lados tem um hexágono?", options: ["5", "6", "7", "8"], answer: "6" },
-            { question: "Qual o prato principal da culinária japonesa?", options: ["Taco", "Pizza", "Sushi", "Paella"], answer: "Sushi" },
-            { question: "Qual é o idioma oficial de Portugal?", options: ["Espanhol", "Português", "Francês", "Inglês"], answer: "Português" },
-            { question: "Qual o coletivo de cães?", options: ["Manada", "Alcateia", "Matilha", "Rebanho"], answer: "Matilha" },
-            { question: "Quem pintou a Mona Lisa?", options: ["Vincent van Gogh", "Pablo Picasso", "Leonardo da Vinci", "Michelangelo"], answer: "Leonardo da Vinci" },
+            { question: "Qual a cor resultante da mistura de azul e amarelo?", options: ["Verde", "Laranja", "Roxo", "Marrom"], answer: "Verde", category: "Variedades" },
+            { question: "Qual destes animais é um mamífero?", options: ["Tubarão", "Pinguim", "Baleia", "Crocodilo"], answer: "Baleia", category: "Variedades" },
+            { question: "Quantos lados tem um hexágono?", options: ["5", "6", "7", "8"], answer: "6", category: "Variedades" },
+            { question: "Qual o prato principal da culinária japonesa?", options: ["Taco", "Pizza", "Sushi", "Paella"], answer: "Sushi", category: "Variedades" },
+            { question: "Qual é o idioma oficial de Portugal?", options: ["Espanhol", "Português", "Francês", "Inglês"], answer: "Português", category: "Variedades" },
+            { question: "Qual o coletivo de cães?", options: ["Manada", "Alcateia", "Matilha", "Rebanho"], answer: "Matilha", category: "Variedades" },
+            { question: "Qual é o país conhecido por inventar o sushi?", options: ["China", "Coreia do Sul", "Japão", "Tailândia"], answer: "Japão", category: "Variedades" },
+            { question: "Quantos segundos tem um minuto?", options: ["60", "100", "30", "90"], answer: "60", category: "Variedades" },
+            { question: "Quem pintou a Mona Lisa?", options: ["Pablo Picasso", "Michelangelo", "Leonardo da Vinci", "Vincent van Gogh"], answer: "Leonardo da Vinci", category: "Variedades" },
+            { question: "Qual é o maior animal terrestre?", options: ["Girafa", "Rinoceronte", "Elefante Africano", "Hipopótamo"], answer: "Elefante Africano", category: "Variedades" },
+            { question: "Qual é o símbolo químico da água?", options: ["CO2", "H2O", "O2", "NaCl"], answer: "H2O", category: "Variedades" },
+            { question: "Qual é o nome do instrumento usado para medir temperatura?", options: ["Barômetro", "Termômetro", "Altímetro", "Higrômetro"], answer: "Termômetro", category: "Variedades" },
+            { question: "Qual país é famoso pela Torre Eiffel?", options: ["Itália", "França", "Alemanha", "Inglaterra"], answer: "França", category: "Variedades" },
+            { question: "Em que esporte se usa uma raquete e uma peteca?", options: ["Tênis", "Squash", "Badminton", "Pingue-pongue"], answer: "Badminton", category: "Variedades" },
+            { question: "Quantos dias tem um ano bissexto?", options: ["365", "360", "364", "366"], answer: "366", category: "Variedades" },
+            { question: "Que cor se obtém misturando azul e amarelo?", options: ["Verde", "Laranja", "Roxo", "Cinza"], answer: "Verde", category: "Variedades" },
+            { question: "Qual é o nome do gás que respiramos?", options: ["Hidrogênio", "Oxigênio", "Gás carbônico", "Nitrogênio"], answer: "Oxigênio", category: "Variedades" },
+            { question: "Qual é a moeda oficial do Japão?", options: ["Yuan", "Won", "Yen", "Dólar"], answer: "Yen", category: "Variedades" },
+            { question: "O que mede a balança?", options: ["Volume", "Peso", "Altura", "Distância"], answer: "Peso", category: "Variedades" },
+            { question: "Qual é o maior país do mundo em extensão territorial?", options: ["Canadá", "Brasil", "China", "Rússia"], answer: "Rússia", category: "Variedades" },
+            { question: "Quantas cores tem o arco-íris tradicional?", options: ["5", "6", "7", "8"], answer: "7", category: "Variedades" },
+            { question: "Qual é o nome do alimento feito de leite e que pode ser amarelo ou branco?", options: ["Manteiga", "Queijo", "Iogurte", "Requeijão"], answer: "Queijo", category: "Variedades" },
+            { question: "Qual é o esporte praticado nas quadras com cestas?", options: ["Tênis", "Vôlei", "Basquete", "Handebol"], answer: "Basquete", category: "Variedades" },
+            { question: "Qual é a principal fonte de energia renovável usada no Brasil?", options: ["Solar", "Eólica", "Hidrelétrica", "Geotérmica"], answer: "Hidrelétrica", category: "Variedades" },
+            { question: "Qual animal é conhecido como o 'rei da selva'?", options: ["Leão", "Tigre", "Elefante", "Pantera"], answer: "Leão", category: "Variedades" },
+            { question: "Qual é o menor continente?", options: ["Europa", "Antártica", "Oceania", "Ásia"], answer: "Oceania", category: "Variedades" },
+            { question: "Qual fruta é famosa por conter potássio?", options: ["Maçã", "Banana", "Uva", "Abacaxi"], answer: "Banana", category: "Variedades" },
+            { question: "Quantos metros tem uma maratona?", options: ["21.097", "42.195", "15.000", "10.000"], answer: "42.195", category: "Variedades" },
+            { question: "Qual é o idioma mais falado no mundo?", options: ["Espanhol", "Inglês", "Chinês Mandarim", "Hindi"], answer: "Chinês Mandarim", category: "Variedades" },
+            { question: "Qual metal é usado principalmente na fabricação de fios elétricos?", options: ["Ferro", "Ouro", "Alumínio", "Cobre"], answer: "Cobre", category: "Variedades" },
+            { question: "Qual é o nome da linha imaginária que divide o planeta em hemisférios norte e sul?", options: ["Meridiano de Greenwich", "Trópico de Câncer", "Equador", "Linha Internacional da Data"], answer: "Equador", category: "Variedades" },
+            { question: "Qual é o maior mamífero do mundo?", options: ["Elefante", "Baleia-azul", "Hipopótamo", "Orca"], answer: "Baleia-azul", category: "Variedades" },
+            { question: "Em que estado brasileiro fica o Cristo Redentor?", options: ["São Paulo", "Bahia", "Rio de Janeiro", "Minas Gerais"], answer: "Rio de Janeiro", category: "Variedades" },
+            { question: "O que significa a sigla ONU?", options: ["Organização Nacional Unida", "Ordem das Nações Unidas", "Organização das Nações Unidas", "Organismo Nacional Unificado"], answer: "Organização das Nações Unidas", category: "Variedades" },
+            { question: "Quantas patas tem uma aranha?", options: ["6", "8", "10", "12"], answer: "8", category: "Variedades" },
+            { question: "Qual é o número PI (π) aproximado?", options: ["3,14", "2,71", "1,61", "4,13"], answer: "3,14", category: "Variedades" },
+            { question: "Qual é a capital do Canadá?", options: ["Toronto", "Vancouver", "Montreal", "Ottawa"], answer: "Ottawa", category: "Variedades" },
+            { question: "Qual o nome do instrumento de sopro usado nas orquestras e também em bandas marciais?", options: ["Violino", "Trombone", "Flauta", "Piano"], answer: "Flauta", category: "Variedades" },
+            { question: "Qual o órgão do corpo humano responsável por bombear o sangue?", options: ["Fígado", "Coração", "Pulmão", "Estômago"], answer: "Coração", category: "Variedades" },
+            { question: "Qual a capital do estado de Minas Gerais?", options: ["Belo Horizonte", "Uberlândia", "Juiz de Fora", "Contagem"], answer: "Belo Horizonte", category: "Variedades" },
+            { question: "Qual instrumento mede a velocidade do vento?", options: ["Anemômetro", "Termômetro", "Higrômetro", "Barômetro"], answer: "Anemômetro", category: "Variedades" },
+            { question: "O que significa Wi-Fi?", options: ["Wireless Fidelity", "Wired Fiber", "Wide Frequency", "Web Finder"], answer: "Wireless Fidelity", category: "Variedades" },
+            { question: "Qual é o maior rio do mundo em volume de água?", options: ["Nilo", "Amazonas", "Mississippi", "Yangtzé"], answer: "Amazonas", category: "Variedades" },
+            { question: "Em que país surgiu o futebol?", options: ["Espanha", "Itália", "Brasil", "Inglaterra"], answer: "Inglaterra", category: "Variedades" },
+            { question: "Qual elemento químico tem o símbolo 'Fe'?", options: ["Ferro", "Fósforo", "Flúor", "Frâncio"], answer: "Ferro", category: "Variedades" },
         ];
 
 
@@ -446,6 +532,7 @@
         const playerCountSelector = document.getElementById('player-count-selector');
         const roundsSlider = document.getElementById('rounds-slider');
         const roundsValue = document.getElementById('rounds-value');
+        const categorySelector = document.getElementById('category-selector');
         const scoreDisplayMode = document.getElementById('score-display-mode');
         const startGameBtn = document.getElementById('start-game-btn');
         
@@ -477,17 +564,20 @@
                 numPlayers: 2,
                 numRounds: 10,
                 scoreMode: 'realtime', // 'realtime' or 'final'
+                selectedCategories: [],
             },
             players: [],
             currentRound: 1,
             currentPlayerIndex: 0,
             currentQuestion: null,
+            // Mantém os índices das perguntas originais para não repetir entre as sessões
             usedQuestionIndices: new Set(),
-            shuffledQuestions: []
+            // Perguntas da partida atual, filtradas e embaralhadas
+            gameQuestions: [],
         };
         
         const playerColors = [
-            'bg-blue-600', 'bg-red-600', 'bg-yellow-500', 'bg-green-600', 'bg-purple-600', 'bg-pink-600'
+            'bg-indigo-600', 'bg-red-600', 'bg-yellow-500', 'bg-green-600', 'bg-purple-600', 'bg-pink-600'
         ];
 
         // ===================================
@@ -538,6 +628,13 @@
         function init() {
             lucide.createIcons();
             setupPlayerCountButtons();
+            setupCategoryButtons();
+
+            // Carregar índices de perguntas usadas do localStorage
+            const storedIndices = localStorage.getItem('usedQuizIndices');
+            if (storedIndices) {
+                gameState.usedQuestionIndices = new Set(JSON.parse(storedIndices));
+            }
             
             // Event Listeners da tela de configuração
             playerCountSelector.addEventListener('click', handlePlayerCountSelection);
@@ -545,11 +642,12 @@
                 gameState.settings.numRounds = parseInt(e.target.value);
                 roundsValue.textContent = gameState.settings.numRounds;
             });
+            categorySelector.addEventListener('click', handleCategorySelection);
             scoreDisplayMode.addEventListener('click', handleScoreModeSelection);
             startGameBtn.addEventListener('click', startGame);
             
             // Event Listeners da tela de resultado
-            restartGameBtn.addEventListener('click', () => location.reload());
+            restartGameBtn.addEventListener('click', resetGame);
             shareResultBtn.addEventListener('click', shareResult);
 
             // Iniciar o contexto de áudio com um gesto do usuário
@@ -565,13 +663,27 @@
         // ---- TELA DE CONFIGURAÇÃO ----
         function setupPlayerCountButtons() {
             playerCountSelector.innerHTML = '';
-            for (let i = 2; i <= 6; i++) {
+            for (let i = 1; i <= 6; i++) {
                 const button = document.createElement('button');
                 button.dataset.players = i;
                 button.textContent = i;
                 button.className = `player-count-btn font-bold py-2 rounded-lg transition-colors ${i === gameState.settings.numPlayers ? 'bg-indigo-600 text-white' : 'bg-gray-700 text-gray-300'}`;
                 playerCountSelector.appendChild(button);
             }
+        }
+
+        function setupCategoryButtons() {
+            const categories = [...new Set(questions.map(q => q.category))];
+            gameState.settings.selectedCategories = [...categories]; // Começa com todas selecionadas
+            categorySelector.innerHTML = '';
+            categories.forEach(category => {
+                const button = document.createElement('button');
+                button.dataset.category = category;
+                button.textContent = category;
+                // Todas começam selecionadas
+                button.className = 'category-btn bg-indigo-600 text-white font-semibold py-2 px-3 rounded-lg text-sm transition-colors';
+                categorySelector.appendChild(button);
+            });
         }
 
         function handlePlayerCountSelection(e) {
@@ -584,6 +696,35 @@
                 });
                 e.target.classList.add('bg-indigo-600', 'text-white');
                 e.target.classList.remove('bg-gray-700', 'text-gray-300');
+                
+                const scoreModeContainer = document.getElementById('score-display-container');
+                if (gameState.settings.numPlayers === 1) {
+                    scoreModeContainer.classList.add('hidden');
+                } else {
+                    scoreModeContainer.classList.remove('hidden');
+                }
+            }
+        }
+
+        function handleCategorySelection(e) {
+            if (e.target.classList.contains('category-btn')) {
+                playSound('click');
+                const category = e.target.dataset.category;
+                const selectedCategories = gameState.settings.selectedCategories;
+                
+                if (selectedCategories.includes(category)) {
+                    // Desselecionar, mas apenas se não for a última
+                    if (selectedCategories.length > 1) {
+                        gameState.settings.selectedCategories = selectedCategories.filter(c => c !== category);
+                        e.target.classList.remove('bg-indigo-600', 'text-white');
+                        e.target.classList.add('bg-gray-700', 'text-gray-300');
+                    }
+                } else {
+                    // Selecionar
+                    selectedCategories.push(category);
+                    e.target.classList.add('bg-indigo-600', 'text-white');
+                    e.target.classList.remove('bg-gray-700', 'text-gray-300');
+                }
             }
         }
 
@@ -600,19 +741,37 @@
             }
         }
 
-        // ---- TRANSIÇÃO DE TELAS ----
+        // ---- TRANSIÇÃO DE TELAS E RESET ----
         function showScreen(screenId) {
             setupScreen.classList.add('hidden');
             gameScreen.classList.add('hidden');
             resultScreen.classList.add('hidden');
             document.getElementById(screenId).classList.remove('hidden');
         }
+
+        function resetGame() {
+            playSound('click');
+             // Reseta apenas o estado da partida, não as configurações ou perguntas já usadas
+            gameState.players = [];
+            gameState.currentRound = 1;
+            gameState.currentPlayerIndex = 0;
+            gameState.currentQuestion = null;
+            gameState.gameQuestions = [];
+            showScreen('setup-screen');
+        }
         
         // ---- INÍCIO DO JOGO ----
         function startGame() {
             playSound('click');
 
-            // 1. Inicializar jogadores
+            // 1. Filtra e embaralha as perguntas
+            const filteredQuestions = questions
+                .map((q, index) => ({ ...q, originalIndex: index })) // Anexa o índice original
+                .filter(q => gameState.settings.selectedCategories.includes(q.category));
+
+            gameState.gameQuestions = filteredQuestions.sort(() => Math.random() - 0.5);
+
+            // 2. Inicializar jogadores
             gameState.players = [];
             for (let i = 0; i < gameState.settings.numPlayers; i++) {
                 gameState.players.push({
@@ -622,10 +781,6 @@
                     color: playerColors[i]
                 });
             }
-            
-            // 2. Embaralhar perguntas
-            gameState.shuffledQuestions = [...questions].sort(() => Math.random() - 0.5);
-            gameState.usedQuestionIndices.clear();
             
             // 3. Resetar estado do jogo
             gameState.currentRound = 1;
@@ -646,10 +801,13 @@
             }
             
             gameState.currentPlayerIndex = 0;
-            pickNewQuestion();
+            if (!pickNewQuestion()) {
+                endGame(); // Encerra se não houver mais perguntas disponíveis
+                return;
+            };
             updateGameUI();
 
-            if(gameState.settings.scoreMode === 'realtime') {
+            if(gameState.settings.scoreMode === 'realtime' && gameState.settings.numPlayers > 1) {
                 realtimeScoreboard.classList.remove('hidden');
                 updateRealtimeScoreboard();
             } else {
@@ -658,18 +816,24 @@
         }
 
         function pickNewQuestion() {
-            if (gameState.usedQuestionIndices.size === gameState.shuffledQuestions.length) {
-                // Reinicia se todas as perguntas foram usadas
-                gameState.usedQuestionIndices.clear();
+            if (gameState.usedQuestionIndices.size >= questions.length) {
+                gameState.usedQuestionIndices.clear(); // Limpa se todas as perguntas do banco de dados já foram usadas
+                localStorage.removeItem('usedQuizIndices');
             }
 
-            let questionIndex = -1;
-            do {
-                questionIndex = Math.floor(Math.random() * gameState.shuffledQuestions.length);
-            } while (gameState.usedQuestionIndices.has(questionIndex));
-            
-            gameState.usedQuestionIndices.add(questionIndex);
-            gameState.currentQuestion = gameState.shuffledQuestions[questionIndex];
+            // Encontra a próxima pergunta não utilizada dentro do conjunto de perguntas da partida
+            const nextQuestion = gameState.gameQuestions.find(q => !gameState.usedQuestionIndices.has(q.originalIndex));
+
+            if (nextQuestion) {
+                gameState.currentQuestion = nextQuestion;
+                gameState.usedQuestionIndices.add(nextQuestion.originalIndex);
+                localStorage.setItem('usedQuizIndices', JSON.stringify(Array.from(gameState.usedQuestionIndices)));
+                return true;
+            } else {
+                // Não há mais perguntas novas nas categorias selecionadas
+                alert("Não há mais perguntas novas disponíveis nas categorias selecionadas!");
+                return false;
+            }
         }
 
         // ---- ATUALIZAÇÃO DA UI DO JOGO ----
@@ -682,6 +846,12 @@
             currentPlayerNameSpan.textContent = currentPlayer.name;
             currentPlayerIndicator.className = `text-lg font-bold p-2 rounded-lg text-center transition-all duration-300 text-white ${currentPlayer.color}`;
             
+            if (gameState.settings.numPlayers === 1) {
+                currentPlayerIndicator.classList.add('hidden');
+            } else {
+                currentPlayerIndicator.classList.remove('hidden');
+            }
+
             questionText.textContent = gameState.currentQuestion.question;
             
             renderOptions();
@@ -777,61 +947,105 @@
         function endGame() {
             showScreen('result-screen');
             renderFinalResults();
-            playSound('winner');
-            createConfetti(100);
+            if (gameState.settings.numPlayers > 1) {
+                playSound('winner');
+                createConfetti(100);
+            }
         }
 
         function renderFinalResults() {
-            const sortedPlayers = [...gameState.players].sort((a, b) => b.score - a.score);
-            const winner = sortedPlayers[0];
-            const isTie = sortedPlayers.length > 1 && sortedPlayers[0].score === sortedPlayers[1].score;
+            if (gameState.settings.numPlayers > 1) {
+                const sortedPlayers = [...gameState.players].sort((a, b) => b.score - a.score);
+                const winner = sortedPlayers[0];
+                const isTie = sortedPlayers.length > 1 && sortedPlayers[0].score === sortedPlayers[1].score;
 
-            if (isTie) {
-                winnerAnnouncement.innerHTML = `<h2 class="text-3xl font-bold text-yellow-400">É um empate!</h2>`;
+                if (isTie) {
+                    winnerAnnouncement.innerHTML = `<h2 class="text-3xl font-bold text-yellow-400">É um empate!</h2>`;
+                } else {
+                    winnerAnnouncement.innerHTML = `
+                        <div class="text-yellow-400 mb-2">
+                            <i data-lucide="trophy" class="w-12 h-12 mx-auto"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold">O vencedor é</h2>
+                        <p class="text-4xl font-black ${winner.color} text-white p-2 rounded-lg mt-1">${winner.name}!</p>
+                    `;
+                }
+
+                finalScoreboard.innerHTML = '';
+                sortedPlayers.forEach((player, index) => {
+                    const playerDiv = document.createElement('div');
+                    playerDiv.className = `flex items-center justify-between p-3 rounded-lg text-lg ${index === 0 ? player.color + ' text-white shadow-lg' : 'bg-gray-700'}`;
+                    playerDiv.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <span class="font-bold text-xl">${index + 1}º</span>
+                            <span class="font-semibold">${player.name}</span>
+                        </div>
+                        <span class="font-black text-xl">${player.score} pts</span>
+                    `;
+                    finalScoreboard.appendChild(playerDiv);
+                });
             } else {
-                winnerAnnouncement.innerHTML = `
-                    <div class="text-yellow-400 mb-2">
-                        <i data-lucide="trophy" class="w-12 h-12 mx-auto"></i>
+                // UI para 1 jogador
+                const player = gameState.players[0];
+                winnerAnnouncement.innerHTML = `<h2 class="text-3xl font-bold text-gray-300">Sua Pontuação</h2>`;
+                finalScoreboard.innerHTML = `
+                    <div class="p-4 rounded-lg bg-gray-700 text-center">
+                        <p class="text-lg font-semibold">${player.name}</p>
+                        <p class="text-5xl font-black text-indigo-400 mt-2">${player.score} pts</p>
                     </div>
-                    <h2 class="text-3xl font-bold">O vencedor é</h2>
-                    <p class="text-4xl font-black ${winner.color} text-white p-2 rounded-lg mt-1">${winner.name}!</p>
                 `;
             }
-
-            finalScoreboard.innerHTML = '';
-            sortedPlayers.forEach((player, index) => {
-                const playerDiv = document.createElement('div');
-                playerDiv.className = `flex items-center justify-between p-3 rounded-lg text-lg ${index === 0 ? player.color + ' text-white shadow-lg' : 'bg-gray-700'}`;
-                playerDiv.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <span class="font-bold text-xl">${index + 1}º</span>
-                        <span class="font-semibold">${player.name}</span>
-                    </div>
-                    <span class="font-black text-xl">${player.score} pts</span>
-                `;
-                finalScoreboard.appendChild(playerDiv);
-            });
             lucide.createIcons();
         }
         
-        function shareResult() {
+        async function shareResult() {
             playSound('click');
-            const sortedPlayers = [...gameState.players].sort((a, b) => b.score - a.score);
-            let shareText = `🏆 Resultado do Quiz de Conhecimentos Gerais 🏆\n\n`;
-            sortedPlayers.forEach((player, index) => {
-                shareText += `${index + 1}º: ${player.name} - ${player.score} pontos\n`;
-            });
+            let shareText;
+            if (gameState.settings.numPlayers > 1) {
+                const sortedPlayers = [...gameState.players].sort((a, b) => b.score - a.score);
+                shareText = `🏆 Resultado do Quiz de Conhecimentos Gerais 🏆\n\n`;
+                sortedPlayers.forEach((player, index) => {
+                    shareText += `${index + 1}º: ${player.name} - ${player.score} pontos\n`;
+                });
+            } else {
+                const player = gameState.players[0];
+                shareText = `🏆 Fiz ${player.score} pontos no Quiz de Conhecimentos Gerais! 🏆`;
+            }
             shareText += "\nJogue você também!";
             
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Resultado do Quiz',
-                    text: shareText,
-                }).catch(console.error);
-            } else {
+            const copyToClipboard = () => {
                 navigator.clipboard.writeText(shareText).then(() => {
-                    alert('Resultado copiado para a área de transferência!');
+                    const originalHTML = shareResultBtn.innerHTML;
+                    shareResultBtn.innerHTML = `
+                        <i data-lucide="check" class="w-5 h-5"></i>
+                        Copiado!
+                    `;
+                    lucide.createIcons();
+                    shareResultBtn.disabled = true;
+                    setTimeout(() => {
+                        shareResultBtn.innerHTML = originalHTML;
+                        lucide.createIcons();
+                        shareResultBtn.disabled = false;
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Falha ao copiar resultado:', err);
                 });
+            };
+
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: 'Resultado do Quiz',
+                        text: shareText,
+                    });
+                } catch (error) {
+                    if (error.name !== 'AbortError') {
+                        console.error("Erro ao usar Web Share API, usando clipboard como fallback:", error);
+                        copyToClipboard();
+                    }
+                }
+            } else {
+                copyToClipboard();
             }
         }
 
@@ -855,4 +1069,5 @@
     </script>
 </body>
 </html>
+
 
